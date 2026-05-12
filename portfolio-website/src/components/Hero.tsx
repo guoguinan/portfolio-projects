@@ -25,7 +25,7 @@ export default function Hero() {
             Hello, I&apos;m
           </h2>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6">
-            郭贵南 (Guignan)
+            Henry Guo
           </h1>
           <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 mb-4 font-light">
             Senior Frontend Engineer
@@ -72,7 +72,7 @@ export default function Hero() {
               <Linkedin className="w-6 h-6" />
             </a>
             <a
-              href="mailto:guoguinan@example.com"
+              href="mailto:henry.guo@example.com"
               className="p-3 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="Email"
             >
