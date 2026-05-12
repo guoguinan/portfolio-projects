@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Ship,
@@ -14,6 +14,11 @@ import {
   ChevronDown,
   Home,
   ArrowLeft,
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageProvider";
@@ -738,23 +743,191 @@ function ShipCertView({ lang }: { lang: string }) {
   );
 }
 
-function ShipMaintView({ lang }: { lang: string }) {
+interface ShipMaintRecord {
+  id: string;
+  shipName: string;
+  shipNameEn: string;
+  maintType: string;
+  maintTypeEn: string;
+  description: string;
+  descriptionEn: string;
+  startDate: string;
+  endDate: string;
+  cost: number;
+  status: string;
+  statusEn: string;
+}
+
+function useApiData<T>(endpoint: string) {
+  const [data, setData] = useState<T[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    const res = await fetch(endpoint);
+    const json = await res.json();
+    setData(json);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [endpoint]);
+
+  const addItem = async (item: Omit<T, "id">) => {
+    await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+    fetchData();
+  };
+
+  const updateItem = async (id: string, updates: Partial<T>) => {
+    await fetch(endpoint, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, ...updates }) });
+    fetchData();
+  };
+
+  const deleteItem = async (id: string) => {
+    await fetch(endpoint, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    fetchData();
+  };
+
+  return { data, loading, addItem, updateItem, deleteItem };
+}
+
+function EditableTable<T extends { id: string }>({
+  data,
+  columns,
+  lang,
+  onDelete,
+  onUpdate,
+  renderEditForm,
+}: {
+  data: T[];
+  columns: { key: keyof T; label: string; labelEn: string; render?: (row: T) => React.ReactNode }[];
+  lang: string;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<T>) => void;
+  renderEditForm: (row: T, onSave: (updates: Partial<T>) => void, onCancel: () => void) => React.ReactNode;
+}) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <Wrench className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
-          {lang === "zh" ? "船舶维保" : "Ship Maintenance"}
-        </h3>
-        <p className="text-slate-500">
-          {lang === "zh"
-            ? "维保记录管理模块 - 开发中"
-            : "Maintenance record management - In Development"}
-        </p>
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead className="bg-slate-50">
+          <tr>
+            {columns.map((col) => (
+              <th key={String(col.key)} className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                {lang === "zh" ? col.label : col.labelEn}
+              </th>
+            ))}
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+              {lang === "zh" ? "操作" : "Actions"}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {data.map((row) => (
+            <tr key={row.id} className="hover:bg-slate-50">
+              {editingId === row.id ? (
+                <td colSpan={columns.length + 1} className="px-6 py-4">
+                  {renderEditForm(row, (updates) => { onUpdate(row.id, updates); setEditingId(null); }, () => setEditingId(null))}
+                </td>
+              ) : (
+                <>
+                  {columns.map((col) => (
+                    <td key={String(col.key)} className="px-6 py-4 text-sm text-slate-800">
+                      {col.render ? col.render(row) : String(row[col.key] ?? "")}
+                    </td>
+                  ))}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setEditingId(row.id)} className="p-1 text-blue-500 hover:bg-blue-50 rounded">
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => onDelete(row.id)} className="p-1 text-red-500 hover:bg-red-50 rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ShipMaintView({ lang }: { lang: string }) {
+  const { data, loading, addItem, updateItem, deleteItem } = useApiData<ShipMaintRecord>("/api/ship-maint");
+  const [showAdd, setShowAdd] = useState(false);
+  const [newItem, setNewItem] = useState<Partial<ShipMaintRecord>>({});
+
+  if (loading) return <div className="p-8 text-center text-slate-500">{lang === "zh" ? "加载中..." : "Loading..."}</div>;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">{lang === "zh" ? "船舶维保" : "Ship Maintenance"}</h3>
+          <button onClick={() => setShowAdd(!showAdd)} className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center gap-1">
+            <Plus className="w-4 h-4" /> {lang === "zh" ? "新增" : "Add"}
+          </button>
+        </div>
+        {showAdd && (
+          <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 grid grid-cols-2 md:grid-cols-3 gap-3">
+            <input placeholder={lang === "zh" ? "船舶" : "Ship"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, shipName: e.target.value })} />
+            <input placeholder={lang === "zh" ? "类型" : "Type"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, maintType: e.target.value })} />
+            <input placeholder={lang === "zh" ? "描述" : "Description"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} />
+            <input type="date" className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, startDate: e.target.value })} />
+            <input type="date" className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, endDate: e.target.value })} />
+            <input type="number" placeholder={lang === "zh" ? "费用" : "Cost"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, cost: Number(e.target.value) })} />
+            <div className="flex gap-2 col-span-full">
+              <button onClick={() => { addItem(newItem as Omit<ShipMaintRecord, "id">); setShowAdd(false); setNewItem({}); }} className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 flex items-center gap-1">
+                <Check className="w-4 h-4" /> {lang === "zh" ? "保存" : "Save"}
+              </button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 bg-slate-300 text-slate-700 text-sm rounded hover:bg-slate-400 flex items-center gap-1">
+                <X className="w-4 h-4" /> {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        )}
+        <EditableTable
+          data={data}
+          lang={lang}
+          onDelete={deleteItem}
+          onUpdate={updateItem}
+          columns={[
+            { key: "id", label: "编号", labelEn: "ID" },
+            { key: "shipName", label: "船舶", labelEn: "Ship" },
+            { key: "maintType", label: "类型", labelEn: "Type" },
+            { key: "description", label: "描述", labelEn: "Description" },
+            { key: "startDate", label: "开始", labelEn: "Start" },
+            { key: "endDate", label: "结束", labelEn: "End" },
+            { key: "cost", label: "费用", labelEn: "Cost", render: (row) => <>¥{Number(row.cost).toLocaleString()}</> },
+            { key: "status", label: "状态", labelEn: "Status", render: (row) => (
+              <span className={`px-2 py-0.5 text-xs rounded ${row.status === "已完成" ? "bg-green-100 text-green-600" : row.status === "进行中" ? "bg-blue-100 text-blue-600" : "bg-orange-100 text-orange-600"}`}>
+                {lang === "zh" ? row.status : row.statusEn}
+              </span>
+            )},
+          ]}
+          renderEditForm={(row, onSave, onCancel) => (
+            <div className="flex flex-wrap gap-2">
+              <input defaultValue={row.shipName} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ shipName: e.target.value })} />
+              <input defaultValue={row.maintType} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ maintType: e.target.value })} />
+              <input defaultValue={row.description} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ description: e.target.value })} />
+              <input type="date" defaultValue={row.startDate} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ startDate: e.target.value })} />
+              <input type="date" defaultValue={row.endDate} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ endDate: e.target.value })} />
+              <input type="number" defaultValue={row.cost} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ cost: Number(e.target.value) })} />
+              <select defaultValue={row.status} className="px-2 py-1 border rounded text-sm" onChange={(e) => onSave({ status: e.target.value })}>
+                <option value="待开始">{lang === "zh" ? "待开始" : "Pending"}</option>
+                <option value="进行中">{lang === "zh" ? "进行中" : "In Progress"}</option>
+                <option value="已完成">{lang === "zh" ? "已完成" : "Completed"}</option>
+              </select>
+              <button onClick={onCancel} className="px-3 py-1 bg-slate-300 rounded text-sm">{lang === "zh" ? "完成" : "Done"}</button>
+            </div>
+          )}
+        />
       </div>
     </motion.div>
   );
@@ -1191,23 +1364,88 @@ function PurchaseApplyView({ lang }: { lang: string }) {
   );
 }
 
+interface PurchaseApproval {
+  id: string;
+  title: string;
+  titleEn: string;
+  applicant: string;
+  applicantEn: string;
+  amount: number;
+  approver: string;
+  approverEn: string;
+  status: string;
+  statusEn: string;
+  applyDate: string;
+  approveDate?: string;
+}
+
 function PurchaseApprovalView({ lang }: { lang: string }) {
+  const { data, loading, addItem, updateItem, deleteItem } = useApiData<PurchaseApproval>("/api/purchase-approval");
+  const [showAdd, setShowAdd] = useState(false);
+  const [newItem, setNewItem] = useState<Partial<PurchaseApproval>>({});
+
+  if (loading) return <div className="p-8 text-center text-slate-500">{lang === "zh" ? "加载中..." : "Loading..."}</div>;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
-          {lang === "zh" ? "采购审批" : "Purchase Approval"}
-        </h3>
-        <p className="text-slate-500">
-          {lang === "zh"
-            ? "采购审批流程管理 - 开发中"
-            : "Purchase approval workflow - In Development"}
-        </p>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">{lang === "zh" ? "采购审批" : "Purchase Approval"}</h3>
+          <button onClick={() => setShowAdd(!showAdd)} className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center gap-1">
+            <Plus className="w-4 h-4" /> {lang === "zh" ? "新增" : "Add"}
+          </button>
+        </div>
+        {showAdd && (
+          <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 grid grid-cols-2 md:grid-cols-3 gap-3">
+            <input placeholder={lang === "zh" ? "标题" : "Title"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} />
+            <input placeholder={lang === "zh" ? "申请人" : "Applicant"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, applicant: e.target.value })} />
+            <input placeholder={lang === "zh" ? "审批人" : "Approver"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, approver: e.target.value })} />
+            <input type="number" placeholder={lang === "zh" ? "金额" : "Amount"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, amount: Number(e.target.value) })} />
+            <input type="date" className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, applyDate: e.target.value })} />
+            <div className="flex gap-2 col-span-full">
+              <button onClick={() => { addItem(newItem as Omit<PurchaseApproval, "id">); setShowAdd(false); setNewItem({}); }} className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 flex items-center gap-1">
+                <Check className="w-4 h-4" /> {lang === "zh" ? "保存" : "Save"}
+              </button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 bg-slate-300 text-slate-700 text-sm rounded hover:bg-slate-400 flex items-center gap-1">
+                <X className="w-4 h-4" /> {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        )}
+        <EditableTable
+          data={data}
+          lang={lang}
+          onDelete={deleteItem}
+          onUpdate={updateItem}
+          columns={[
+            { key: "id", label: "编号", labelEn: "ID" },
+            { key: "title", label: "标题", labelEn: "Title" },
+            { key: "applicant", label: "申请人", labelEn: "Applicant" },
+            { key: "amount", label: "金额", labelEn: "Amount", render: (row) => <>¥{Number(row.amount).toLocaleString()}</> },
+            { key: "approver", label: "审批人", labelEn: "Approver" },
+            { key: "applyDate", label: "申请日期", labelEn: "Date" },
+            { key: "status", label: "状态", labelEn: "Status", render: (row) => (
+              <span className={`px-2 py-0.5 text-xs rounded ${row.status === "已批准" ? "bg-green-100 text-green-600" : row.status === "已驳回" ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"}`}>
+                {lang === "zh" ? row.status : row.statusEn}
+              </span>
+            )},
+          ]}
+          renderEditForm={(row, onSave, onCancel) => (
+            <div className="flex flex-wrap gap-2">
+              <input defaultValue={row.title} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ title: e.target.value })} />
+              <input defaultValue={row.applicant} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ applicant: e.target.value })} />
+              <input defaultValue={row.approver} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ approver: e.target.value })} />
+              <input type="number" defaultValue={row.amount} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ amount: Number(e.target.value) })} />
+              <input type="date" defaultValue={row.applyDate} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ applyDate: e.target.value })} />
+              <select defaultValue={row.status} className="px-2 py-1 border rounded text-sm" onChange={(e) => onSave({ status: e.target.value })}>
+                <option value="审批中">{lang === "zh" ? "审批中" : "Approving"}</option>
+                <option value="已批准">{lang === "zh" ? "已批准" : "Approved"}</option>
+                <option value="已驳回">{lang === "zh" ? "已驳回" : "Rejected"}</option>
+              </select>
+              <button onClick={onCancel} className="px-3 py-1 bg-slate-300 rounded text-sm">{lang === "zh" ? "完成" : "Done"}</button>
+            </div>
+          )}
+        />
       </div>
     </motion.div>
   );
@@ -1438,23 +1676,87 @@ function CrewCertView({ lang }: { lang: string }) {
   );
 }
 
+interface CrewSalary {
+  id: string;
+  crewId: string;
+  name: string;
+  nameEn: string;
+  position: string;
+  positionEn: string;
+  baseSalary: number;
+  bonus: number;
+  deduction: number;
+  totalSalary: number;
+  payDate: string;
+  month: string;
+}
+
 function CrewSalaryView({ lang }: { lang: string }) {
+  const { data, loading, addItem, updateItem, deleteItem } = useApiData<CrewSalary>("/api/crew-salary");
+  const [showAdd, setShowAdd] = useState(false);
+  const [newItem, setNewItem] = useState<Partial<CrewSalary>>({});
+
+  if (loading) return <div className="p-8 text-center text-slate-500">{lang === "zh" ? "加载中..." : "Loading..."}</div>;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
-          {lang === "zh" ? "薪资管理" : "Salary Management"}
-        </h3>
-        <p className="text-slate-500">
-          {lang === "zh"
-            ? "船员薪资管理模块 - 开发中"
-            : "Crew salary management - In Development"}
-        </p>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">{lang === "zh" ? "薪资管理" : "Salary Management"}</h3>
+          <button onClick={() => setShowAdd(!showAdd)} className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center gap-1">
+            <Plus className="w-4 h-4" /> {lang === "zh" ? "新增" : "Add"}
+          </button>
+        </div>
+        {showAdd && (
+          <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-3">
+            <input placeholder={lang === "zh" ? "船员ID" : "Crew ID"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, crewId: e.target.value })} />
+            <input placeholder={lang === "zh" ? "姓名" : "Name"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
+            <input placeholder={lang === "zh" ? "职位" : "Position"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, position: e.target.value })} />
+            <input type="number" placeholder={lang === "zh" ? "基本工资" : "Base Salary"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, baseSalary: Number(e.target.value) })} />
+            <input type="number" placeholder={lang === "zh" ? "奖金" : "Bonus"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, bonus: Number(e.target.value) })} />
+            <input type="number" placeholder={lang === "zh" ? "扣款" : "Deduction"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, deduction: Number(e.target.value) })} />
+            <input type="date" placeholder={lang === "zh" ? "发薪日" : "Pay Date"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, payDate: e.target.value })} />
+            <input placeholder={lang === "zh" ? "月份" : "Month"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, month: e.target.value })} />
+            <div className="flex gap-2 col-span-full">
+              <button onClick={() => { addItem(newItem as Omit<CrewSalary, "id">); setShowAdd(false); setNewItem({}); }} className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 flex items-center gap-1">
+                <Check className="w-4 h-4" /> {lang === "zh" ? "保存" : "Save"}
+              </button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 bg-slate-300 text-slate-700 text-sm rounded hover:bg-slate-400 flex items-center gap-1">
+                <X className="w-4 h-4" /> {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        )}
+        <EditableTable
+          data={data}
+          lang={lang}
+          onDelete={deleteItem}
+          onUpdate={updateItem}
+          columns={[
+            { key: "id", label: "编号", labelEn: "ID" },
+            { key: "crewId", label: "船员ID", labelEn: "Crew ID" },
+            { key: "name", label: "姓名", labelEn: "Name" },
+            { key: "position", label: "职位", labelEn: "Position" },
+            { key: "baseSalary", label: "基本工资", labelEn: "Base", render: (row) => <>¥{Number(row.baseSalary).toLocaleString()}</> },
+            { key: "bonus", label: "奖金", labelEn: "Bonus", render: (row) => <>¥{Number(row.bonus).toLocaleString()}</> },
+            { key: "deduction", label: "扣款", labelEn: "Deduction", render: (row) => <>¥{Number(row.deduction).toLocaleString()}</> },
+            { key: "totalSalary", label: "实发工资", labelEn: "Total", render: (row) => <span className="font-semibold text-green-600">¥{Number(row.totalSalary).toLocaleString()}</span> },
+            { key: "month", label: "月份", labelEn: "Month" },
+          ]}
+          renderEditForm={(row, onSave, onCancel) => (
+            <div className="flex flex-wrap gap-2">
+              <input defaultValue={row.crewId} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ crewId: e.target.value })} />
+              <input defaultValue={row.name} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ name: e.target.value })} />
+              <input defaultValue={row.position} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ position: e.target.value })} />
+              <input type="number" defaultValue={row.baseSalary} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ baseSalary: Number(e.target.value) })} />
+              <input type="number" defaultValue={row.bonus} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ bonus: Number(e.target.value) })} />
+              <input type="number" defaultValue={row.deduction} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ deduction: Number(e.target.value) })} />
+              <input type="date" defaultValue={row.payDate} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ payDate: e.target.value })} />
+              <input defaultValue={row.month} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ month: e.target.value })} />
+              <button onClick={onCancel} className="px-3 py-1 bg-slate-300 rounded text-sm">{lang === "zh" ? "完成" : "Done"}</button>
+            </div>
+          )}
+        />
       </div>
     </motion.div>
   );
@@ -1579,45 +1881,161 @@ function CostAnalysisView({ lang }: { lang: string }) {
   );
 }
 
+interface Document {
+  id: string;
+  title: string;
+  titleEn: string;
+  category: string;
+  categoryEn: string;
+  version: string;
+  author: string;
+  authorEn: string;
+  createDate: string;
+  updateDate: string;
+  status: string;
+  statusEn: string;
+}
+
 function DocumentsView({ lang }: { lang: string }) {
+  const { data, loading, addItem, updateItem, deleteItem } = useApiData<Document>("/api/documents");
+  const [showAdd, setShowAdd] = useState(false);
+  const [newItem, setNewItem] = useState<Partial<Document>>({});
+
+  if (loading) return <div className="p-8 text-center text-slate-500">{lang === "zh" ? "加载中..." : "Loading..."}</div>;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
-          {lang === "zh" ? "体系文件" : "Documents"}
-        </h3>
-        <p className="text-slate-500">
-          {lang === "zh"
-            ? "体系文件管理模块 - 开发中"
-            : "Document management - In Development"}
-        </p>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">{lang === "zh" ? "体系文件" : "Documents"}</h3>
+          <button onClick={() => setShowAdd(!showAdd)} className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center gap-1">
+            <Plus className="w-4 h-4" /> {lang === "zh" ? "新增" : "Add"}
+          </button>
+        </div>
+        {showAdd && (
+          <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 grid grid-cols-2 md:grid-cols-3 gap-3">
+            <input placeholder={lang === "zh" ? "标题" : "Title"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} />
+            <input placeholder={lang === "zh" ? "类别" : "Category"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, category: e.target.value })} />
+            <input placeholder={lang === "zh" ? "版本" : "Version"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, version: e.target.value })} />
+            <input placeholder={lang === "zh" ? "作者" : "Author"} className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, author: e.target.value })} />
+            <input type="date" className="px-3 py-2 border rounded text-sm" onChange={(e) => setNewItem({ ...newItem, createDate: e.target.value })} />
+            <div className="flex gap-2 col-span-full">
+              <button onClick={() => { addItem(newItem as Omit<Document, "id">); setShowAdd(false); setNewItem({}); }} className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 flex items-center gap-1">
+                <Check className="w-4 h-4" /> {lang === "zh" ? "保存" : "Save"}
+              </button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 bg-slate-300 text-slate-700 text-sm rounded hover:bg-slate-400 flex items-center gap-1">
+                <X className="w-4 h-4" /> {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        )}
+        <EditableTable
+          data={data}
+          lang={lang}
+          onDelete={deleteItem}
+          onUpdate={updateItem}
+          columns={[
+            { key: "id", label: "编号", labelEn: "ID" },
+            { key: "title", label: "标题", labelEn: "Title" },
+            { key: "category", label: "类别", labelEn: "Category" },
+            { key: "version", label: "版本", labelEn: "Version" },
+            { key: "author", label: "作者", labelEn: "Author" },
+            { key: "createDate", label: "创建日期", labelEn: "Create Date" },
+            { key: "updateDate", label: "更新日期", labelEn: "Update Date" },
+            { key: "status", label: "状态", labelEn: "Status", render: (row) => (
+              <span className={`px-2 py-0.5 text-xs rounded ${row.status === "已发布" ? "bg-green-100 text-green-600" : "bg-orange-100 text-orange-600"}`}>
+                {lang === "zh" ? row.status : row.statusEn}
+              </span>
+            )},
+          ]}
+          renderEditForm={(row, onSave, onCancel) => (
+            <div className="flex flex-wrap gap-2">
+              <input defaultValue={row.title} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ title: e.target.value })} />
+              <input defaultValue={row.category} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ category: e.target.value })} />
+              <input defaultValue={row.version} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ version: e.target.value })} />
+              <input defaultValue={row.author} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ author: e.target.value })} />
+              <input type="date" defaultValue={row.updateDate} className="px-2 py-1 border rounded text-sm" onBlur={(e) => onSave({ updateDate: e.target.value })} />
+              <select defaultValue={row.status} className="px-2 py-1 border rounded text-sm" onChange={(e) => onSave({ status: e.target.value })}>
+                <option value="审核中">{lang === "zh" ? "审核中" : "Reviewing"}</option>
+                <option value="已发布">{lang === "zh" ? "已发布" : "Published"}</option>
+                <option value="已作废">{lang === "zh" ? "已作废" : "Obsolete"}</option>
+              </select>
+              <button onClick={onCancel} className="px-3 py-1 bg-slate-300 rounded text-sm">{lang === "zh" ? "完成" : "Done"}</button>
+            </div>
+          )}
+        />
       </div>
     </motion.div>
   );
 }
 
+interface SystemConfig {
+  id: string;
+  key: string;
+  value: string;
+  description: string;
+  descriptionEn: string;
+  updateTime: string;
+}
+
 function SystemView({ lang }: { lang: string }) {
+  const { data, loading, updateItem } = useApiData<SystemConfig>("/api/system-config");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  if (loading) return <div className="p-8 text-center text-slate-500">{lang === "zh" ? "加载中..." : "Loading..."}</div>;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <Settings className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
-          {lang === "zh" ? "系统配置" : "System Config"}
-        </h3>
-        <p className="text-slate-500">
-          {lang === "zh"
-            ? "系统配置管理模块 - 开发中"
-            : "System configuration - In Development"}
-        </p>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h3 className="font-semibold text-slate-800">{lang === "zh" ? "系统配置" : "System Config"}</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "配置项" : "Key"}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "描述" : "Description"}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "当前值" : "Value"}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "更新时间" : "Updated"}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "操作" : "Actions"}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {data.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">{item.key}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{lang === "zh" ? item.description : item.descriptionEn}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800">
+                    {editingId === item.id ? (
+                      <input value={editValue} onChange={(e) => setEditValue(e.target.value)} className="px-2 py-1 border rounded text-sm w-40" autoFocus />
+                    ) : (
+                      <span className="px-2 py-1 bg-slate-100 rounded text-sm">{item.value}</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.updateTime}</td>
+                  <td className="px-6 py-4">
+                    {editingId === item.id ? (
+                      <div className="flex gap-2">
+                        <button onClick={() => { updateItem(item.id, { value: editValue }); setEditingId(null); }} className="p-1 text-green-500 hover:bg-green-50 rounded">
+                          <Check className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setEditingId(null)} className="p-1 text-slate-500 hover:bg-slate-100 rounded">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => { setEditingId(item.id); setEditValue(item.value); }} className="p-1 text-blue-500 hover:bg-blue-50 rounded">
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </motion.div>
   );
