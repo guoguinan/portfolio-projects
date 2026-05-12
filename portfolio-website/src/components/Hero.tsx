@@ -2,8 +2,11 @@
 
 import { motion } from "framer-motion";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
+import { useLanguage } from "./LanguageProvider";
 
 export default function Hero() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="hero"
@@ -22,17 +25,19 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <h2 className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium mb-4 tracking-wide">
-            Hello, I&apos;m
+            {t("你好，我是", "Hello, I'm")}
           </h2>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6">
-            郭贵南 <span className="block text-2xl sm:text-3xl md:text-4xl font-normal text-slate-500 dark:text-slate-400 mt-2">Henry Guo</span>
+            {t("郭贵南", "Henry Guo")}
           </h1>
           <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 mb-4 font-light">
-            高级前端工程师
+            {t("高级前端工程师", "Senior Frontend Engineer")}
           </p>
           <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            I build exceptional digital experiences with modern web technologies.
-            Passionate about React, TypeScript, and creating performant, accessible applications.
+            {t(
+              "我使用现代 Web 技术构建卓越的数字化体验。专注于 React、TypeScript，热衷于创建高性能、无障碍的应用程序。",
+              "I build exceptional digital experiences with modern web technologies. Passionate about React, TypeScript, and creating performant, accessible applications."
+            )}
           </p>
 
           {/* CTA Buttons */}
@@ -41,13 +46,13 @@ export default function Hero() {
               href="#projects"
               className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-colors duration-200 shadow-lg hover:shadow-xl"
             >
-              View My Work
+              {t("查看作品", "View My Work")}
             </a>
             <a
               href="#contact"
               className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border-2 border-blue-600 dark:border-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full transition-colors duration-200"
             >
-              Get In Touch
+              {t("联系我", "Get In Touch")}
             </a>
           </div>
 

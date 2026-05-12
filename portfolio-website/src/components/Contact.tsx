@@ -3,8 +3,10 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Mail, MapPin, Send, Github, Linkedin } from "lucide-react";
+import { useLanguage } from "./LanguageProvider";
 
 export default function Contact() {
+  const { t } = useLanguage();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [formData, setFormData] = useState({
@@ -15,7 +17,6 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log("Form submitted:", formData);
   };
 
@@ -29,7 +30,7 @@ export default function Contact() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-slate-900 dark:text-white mb-4">
-            Get In Touch
+            {t("联系我", "Get In Touch")}
           </h2>
           <div className="w-20 h-1 bg-blue-500 mx-auto mb-12 rounded-full" />
 
@@ -38,12 +39,13 @@ export default function Contact() {
             <div className="space-y-8">
               <div>
                 <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">
-                  Let&apos;s work together
+                  {t("一起合作吧", "Let's work together")}
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  I&apos;m currently available for remote work and freelance projects.
-                  Whether you have a question or just want to say hi, I&apos;ll try my
-                  best to get back to you!
+                  {t(
+                    "我目前可接受远程工作和自由职业项目。无论您有问题还是只是想打个招呼，我都会尽快回复！",
+                    "I'm currently available for remote work and freelance projects. Whether you have a question or just want to say hi, I'll try my best to get back to you!"
+                  )}
                 </p>
               </div>
 
@@ -55,7 +57,6 @@ export default function Contact() {
                   <div>
                     <p className="text-sm text-slate-500 dark:text-slate-400">Email</p>
                     <p className="text-slate-900 dark:text-white">guoguinan@example.com</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Henry Guo</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -63,8 +64,12 @@ export default function Contact() {
                     <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Location</p>
-                    <p className="text-slate-900 dark:text-white">Remote / Worldwide</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {t("位置", "Location")}
+                    </p>
+                    <p className="text-slate-900 dark:text-white">
+                      {t("远程 / 全球", "Remote / Worldwide")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -96,7 +101,7 @@ export default function Contact() {
                   htmlFor="name"
                   className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                 >
-                  Name
+                  {t("姓名", "Name")}
                 </label>
                 <input
                   type="text"
@@ -104,7 +109,7 @@ export default function Contact() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400"
-                  placeholder="Your name"
+                  placeholder={t("您的姓名", "Your name")}
                   required
                 />
               </div>
@@ -130,7 +135,7 @@ export default function Contact() {
                   htmlFor="message"
                   className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
                 >
-                  Message
+                  {t("消息", "Message")}
                 </label>
                 <textarea
                   id="message"
@@ -138,7 +143,7 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={5}
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 resize-none"
-                  placeholder="Your message..."
+                  placeholder={t("您的消息...", "Your message...")}
                   required
                 />
               </div>
@@ -147,7 +152,7 @@ export default function Contact() {
                 className="w-full inline-flex items-center justify-center gap-2 px-8 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
               >
                 <Send className="w-4 h-4" />
-                Send Message
+                {t("发送消息", "Send Message")}
               </button>
             </form>
           </div>

@@ -2,16 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun } from "lucide-react";
-
-const navItems = [
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
-];
+import { useLanguage } from "./LanguageProvider";
 
 export default function Navigation() {
+  const { lang, setLang, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -29,6 +23,18 @@ export default function Navigation() {
     document.documentElement.classList.toggle("dark");
   };
 
+  const toggleLang = () => {
+    setLang(lang === "zh" ? "en" : "zh");
+  };
+
+  const navItems = [
+    { label: t("关于", "About"), href: "#about" },
+    { label: t("技能", "Skills"), href: "#skills" },
+    { label: t("项目", "Projects"), href: "#projects" },
+    { label: t("经历", "Experience"), href: "#experience" },
+    { label: t("联系", "Contact"), href: "#contact" },
+  ];
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -44,7 +50,7 @@ export default function Navigation() {
             href="#hero"
             className="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            郭贵南
+            {t("郭贵南", "Henry Guo")}
           </a>
 
           {/* Desktop Navigation */}
@@ -59,6 +65,13 @@ export default function Navigation() {
               </a>
             ))}
             <button
+              onClick={toggleLang}
+              className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-2 py-1 rounded border border-slate-300 dark:border-slate-600"
+              aria-label="Toggle language"
+            >
+              {lang === "zh" ? "EN" : "中"}
+            </button>
+            <button
               onClick={toggleTheme}
               className="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="Toggle theme"
@@ -69,6 +82,13 @@ export default function Navigation() {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-4 md:hidden">
+            <button
+              onClick={toggleLang}
+              className="text-sm font-medium text-slate-600 dark:text-slate-300 px-2 py-1 rounded border border-slate-300 dark:border-slate-600"
+              aria-label="Toggle language"
+            >
+              {lang === "zh" ? "EN" : "中"}
+            </button>
             <button
               onClick={toggleTheme}
               className="p-2 text-slate-600 dark:text-slate-300"

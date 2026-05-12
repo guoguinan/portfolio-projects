@@ -1,19 +1,22 @@
 "use client";
 
 import { Github, Linkedin, Mail, Heart } from "lucide-react";
+import { useLanguage } from "./LanguageProvider";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="py-8 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            &copy; {new Date().getFullYear()} 郭贵南 Henry Guo. All rights reserved.
+            &copy; {new Date().getFullYear()} {t("郭贵南", "Henry Guo")}. {t("保留所有权利", "All rights reserved")}.
           </p>
           <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-            <span>Built with</span>
+            <span>{t("使用", "Built with")}</span>
             <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-            <span>using Next.js & Tailwind CSS</span>
+            <span>Next.js & Tailwind CSS</span>
           </div>
           <div className="flex gap-4">
             <a

@@ -4,51 +4,51 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import {
   Code2,
-  Palette,
   Database,
-  GitBranch,
-  Terminal,
   Cloud,
+  Terminal,
   Smartphone,
   Gauge,
 } from "lucide-react";
-
-const skills = [
-  {
-    category: "Frontend",
-    icon: Code2,
-    items: ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Framer Motion"],
-  },
-  {
-    category: "Backend",
-    icon: Database,
-    items: ["Node.js", "Express", "PostgreSQL", "MongoDB", "REST APIs", "GraphQL"],
-  },
-  {
-    category: "DevOps",
-    icon: Cloud,
-    items: ["Docker", "AWS", "Vercel", "CI/CD", "Linux", "Nginx"],
-  },
-  {
-    category: "Tools",
-    icon: Terminal,
-    items: ["Git", "Webpack", "Vite", "Jest", "Cypress", "Figma"],
-  },
-  {
-    category: "Mobile",
-    icon: Smartphone,
-    items: ["React Native", "PWA", "Responsive Design", "Capacitor"],
-  },
-  {
-    category: "Performance",
-    icon: Gauge,
-    items: ["Lazy Loading", "Code Splitting", "Caching", "CDN", "SSR/SSG"],
-  },
-];
+import { useLanguage } from "./LanguageProvider";
 
 export default function Skills() {
+  const { t } = useLanguage();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const skills = [
+    {
+      category: t("前端", "Frontend"),
+      icon: Code2,
+      items: ["React", "Next.js", "TypeScript", "Vue.js", "Tailwind CSS", "Framer Motion"],
+    },
+    {
+      category: t("后端", "Backend"),
+      icon: Database,
+      items: ["Node.js", "Express", "PostgreSQL", "MongoDB", "REST APIs", "GraphQL"],
+    },
+    {
+      category: t("DevOps", "DevOps"),
+      icon: Cloud,
+      items: ["Docker", "AWS", "Vercel", "CI/CD", "Linux", "Nginx"],
+    },
+    {
+      category: t("工具", "Tools"),
+      icon: Terminal,
+      items: ["Git", "Webpack", "Vite", "Jest", "Cypress", "Figma"],
+    },
+    {
+      category: t("移动端", "Mobile"),
+      icon: Smartphone,
+      items: ["React Native", "PWA", "Responsive Design", "Capacitor"],
+    },
+    {
+      category: t("性能", "Performance"),
+      icon: Gauge,
+      items: ["Lazy Loading", "Code Splitting", "Caching", "CDN", "SSR/SSG"],
+    },
+  ];
 
   return (
     <section id="skills" className="py-20 sm:py-32 bg-slate-50 dark:bg-slate-800">
@@ -60,7 +60,7 @@ export default function Skills() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-slate-900 dark:text-white mb-4">
-            Skills & Technologies
+            {t("技能与技术", "Skills & Technologies")}
           </h2>
           <div className="w-20 h-1 bg-blue-500 mx-auto mb-12 rounded-full" />
 

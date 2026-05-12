@@ -3,45 +3,55 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ExternalLink, Github } from "lucide-react";
-
-const projects = [
-  {
-    title: "E-Commerce Admin Dashboard",
-    description:
-      "A comprehensive admin dashboard for e-commerce platforms with real-time analytics, inventory management, and order processing.",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Recharts"],
-    github: "https://github.com/guoguinan/portfolio-projects/tree/main/ecommerce-admin",
-    demo: "https://ecommerce-admin-gh-enry.vercel.app",
-  },
-  {
-    title: "Real-time Collaborative Whiteboard",
-    description:
-      "Multi-user whiteboard application with real-time synchronization, drawing tools, and shape recognition.",
-    tech: ["React", "TypeScript", "Canvas API", "WebSocket"],
-    github: "https://github.com/guoguinan/portfolio-projects/tree/main/collaborative-whiteboard",
-    demo: "https://collaborative-whiteboard-taupe.vercel.app",
-  },
-  {
-    title: "Social Media Analytics",
-    description:
-      "Analytics dashboard for tracking social media metrics, engagement rates, and audience growth across platforms.",
-    tech: ["React", "D3.js", "Node.js", "PostgreSQL"],
-    github: "https://github.com/guoguinan/portfolio-projects/tree/main/social-analytics",
-    demo: "https://social-analytics-rho.vercel.app",
-  },
-  {
-    title: "Task Management System",
-    description:
-      "Kanban-style task management with drag-and-drop, team collaboration, and progress tracking.",
-    tech: ["Next.js", "TypeScript", "DnD Kit", "Prisma"],
-    github: "https://github.com/guoguinan/portfolio-projects/tree/main/task-management",
-    demo: "https://task-management-gh-enry.vercel.app",
-  },
-];
+import { useLanguage } from "./LanguageProvider";
 
 export default function Projects() {
+  const { t } = useLanguage();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const projects = [
+    {
+      title: t("电商管理后台", "E-Commerce Admin Dashboard"),
+      description: t(
+        "为电商平台打造的综合后台管理系统，包含实时数据分析、库存管理和订单处理功能。",
+        "A comprehensive admin dashboard for e-commerce platforms with real-time analytics, inventory management, and order processing."
+      ),
+      tech: ["Next.js", "TypeScript", "Tailwind CSS", "Recharts"],
+      github: "https://github.com/guoguinan/portfolio-projects/tree/main/ecommerce-admin",
+      demo: "https://ecommerce-admin-gh-enry.vercel.app",
+    },
+    {
+      title: t("实时协作白板", "Real-time Collaborative Whiteboard"),
+      description: t(
+        "支持多用户实时同步的白板应用，具备绘图工具和形状识别功能。",
+        "Multi-user whiteboard application with real-time synchronization, drawing tools, and shape recognition."
+      ),
+      tech: ["React", "TypeScript", "Canvas API", "WebSocket"],
+      github: "https://github.com/guoguinan/portfolio-projects/tree/main/collaborative-whiteboard",
+      demo: "https://collaborative-whiteboard-taupe.vercel.app",
+    },
+    {
+      title: t("社交媒体分析", "Social Media Analytics"),
+      description: t(
+        "用于追踪社交媒体指标、参与率和跨平台受众增长的分析仪表板。",
+        "Analytics dashboard for tracking social media metrics, engagement rates, and audience growth across platforms."
+      ),
+      tech: ["React", "D3.js", "Node.js", "PostgreSQL"],
+      github: "https://github.com/guoguinan/portfolio-projects/tree/main/social-analytics",
+      demo: "https://social-analytics-rho.vercel.app",
+    },
+    {
+      title: t("任务管理系统", "Task Management System"),
+      description: t(
+        "支持拖拽、团队协作和进度追踪的看板式任务管理系统。",
+        "Kanban-style task management with drag-and-drop, team collaboration, and progress tracking."
+      ),
+      tech: ["Next.js", "TypeScript", "DnD Kit", "Prisma"],
+      github: "https://github.com/guoguinan/portfolio-projects/tree/main/task-management",
+      demo: "https://task-management-gh-enry.vercel.app",
+    },
+  ];
 
   return (
     <section id="projects" className="py-20 sm:py-32 bg-white dark:bg-slate-900">
@@ -53,7 +63,7 @@ export default function Projects() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-slate-900 dark:text-white mb-4">
-            Featured Projects
+            {t("精选项目", "Featured Projects")}
           </h2>
           <div className="w-20 h-1 bg-blue-500 mx-auto mb-12 rounded-full" />
 
@@ -89,14 +99,14 @@ export default function Projects() {
                       className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       <Github className="w-4 h-4" />
-                      <span className="text-sm">Code</span>
+                      <span className="text-sm">{t("代码", "Code")}</span>
                     </a>
                     <a
                       href={project.demo}
                       className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
-                      <span className="text-sm">Live Demo</span>
+                      <span className="text-sm">{t("在线演示", "Live Demo")}</span>
                     </a>
                   </div>
                 </div>
