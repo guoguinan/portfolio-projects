@@ -1,0 +1,211 @@
+{
+  "shipMaint": [
+    {
+      "id": "SM001",
+      "shipName": "MS Ocean Star",
+      "shipNameEn": "MS Ocean Star",
+      "maintType": "年度检验",
+      "maintTypeEn": "Annual Survey",
+      "description": "主机系统全面检查与维护",
+      "descriptionEn": "Main engine system inspection",
+      "startDate": "2024-03-01",
+      "endDate": "2024-03-15",
+      "cost": 125000,
+      "status": "已完成",
+      "statusEn": "Completed"
+    },
+    {
+      "id": "SM002",
+      "shipName": "MS Pacific Wave",
+      "shipNameEn": "MS Pacific Wave",
+      "maintType": "中间检验",
+      "maintTypeEn": "Intermediate Survey",
+      "description": "船体结构无损检测",
+      "descriptionEn": "Hull structure NDT",
+      "startDate": "2024-05-10",
+      "endDate": "2024-05-25",
+      "cost": 86000,
+      "status": "进行中",
+      "statusEn": "In Progress"
+    },
+    {
+      "id": "SM003",
+      "shipName": "MS Atlantic Eagle",
+      "shipNameEn": "MS Atlantic Eagle",
+      "maintType": "坞修",
+      "maintTypeEn": "Dock Repair",
+      "description": "螺旋桨更换与舵系检修",
+      "descriptionEn": "Propeller replacement",
+      "startDate": "2024-06-01",
+      "endDate": "2024-06-20",
+      "cost": 320000,
+      "status": "待开始",
+      "statusEn": "Pending"
+    }
+  ],
+  "purchaseApproval": [
+    {
+      "id": "PA001",
+      "title": "Q2主机备件采购",
+      "titleEn": "Q2 Engine Spares",
+      "applicant": "张工程师",
+      "applicantEn": "Eng. Zhang",
+      "amount": 125000,
+      "approver": "李经理",
+      "approverEn": "Manager Li",
+      "status": "审批中",
+      "statusEn": "Approving",
+      "applyDate": "2024-05-05"
+    },
+    {
+      "id": "PA002",
+      "title": "导航设备更新",
+      "titleEn": "Nav Equipment Update",
+      "applicant": "李船长",
+      "applicantEn": "Capt. Li",
+      "amount": 280000,
+      "approver": "王总监",
+      "approverEn": "Director Wang",
+      "status": "已批准",
+      "statusEn": "Approved",
+      "applyDate": "2024-04-28",
+      "approveDate": "2024-04-30"
+    },
+    {
+      "id": "PA003",
+      "title": "安全设备补充",
+      "titleEn": "Safety Equipment",
+      "applicant": "王安全员",
+      "applicantEn": "Safety Wang",
+      "amount": 45000,
+      "approver": "李经理",
+      "approverEn": "Manager Li",
+      "status": "已驳回",
+      "statusEn": "Rejected",
+      "applyDate": "2024-04-15",
+      "approveDate": "2024-04-16"
+    }
+  ],
+  "crewSalary": [
+    {
+      "id": "CS001",
+      "crewId": "CR001",
+      "name": "李明",
+      "nameEn": "Li Ming",
+      "position": "船长",
+      "positionEn": "Captain",
+      "baseSalary": 35000,
+      "bonus": 5000,
+      "deduction": 2000,
+      "totalSalary": 38000,
+      "payDate": "2024-05-15",
+      "month": "2024-05"
+    },
+    {
+      "id": "CS002",
+      "crewId": "CR002",
+      "name": "王强",
+      "nameEn": "Wang Qiang",
+      "position": "大副",
+      "positionEn": "Chief Officer",
+      "baseSalary": 28000,
+      "bonus": 3000,
+      "deduction": 1500,
+      "totalSalary": 29500,
+      "payDate": "2024-05-15",
+      "month": "2024-05"
+    },
+    {
+      "id": "CS003",
+      "crewId": "CR003",
+      "name": "Tom Johnson",
+      "nameEn": "Tom Johnson",
+      "position": "轮机长",
+      "positionEn": "Chief Engineer",
+      "baseSalary": 32000,
+      "bonus": 4000,
+      "deduction": 1800,
+      "totalSalary": 34200,
+      "payDate": "2024-05-15",
+      "month": "2024-05"
+    }
+  ],
+  "documents": [
+    {
+      "id": "DOC001",
+      "title": "船舶安全管理体系手册",
+      "titleEn": "Ship Safety Management System",
+      "category": "安全管理",
+      "categoryEn": "Safety",
+      "version": "V3.2",
+      "author": "王安全员",
+      "authorEn": "Safety Wang",
+      "createDate": "2023-01-15",
+      "updateDate": "2024-03-20",
+      "status": "已发布",
+      "statusEn": "Published"
+    },
+    {
+      "id": "DOC002",
+      "title": "船舶维护保养程序",
+      "titleEn": "Ship Maintenance Procedure",
+      "category": "维护保养",
+      "categoryEn": "Maintenance",
+      "version": "V2.1",
+      "author": "张工程师",
+      "authorEn": "Eng. Zhang",
+      "createDate": "2023-06-10",
+      "updateDate": "2024-01-15",
+      "status": "已发布",
+      "statusEn": "Published"
+    },
+    {
+      "id": "DOC003",
+      "title": "船员培训计划",
+      "titleEn": "Crew Training Plan",
+      "category": "培训管理",
+      "categoryEn": "Training",
+      "version": "V1.5",
+      "author": "李船长",
+      "authorEn": "Capt. Li",
+      "createDate": "2024-02-01",
+      "updateDate": "2024-04-10",
+      "status": "审核中",
+      "statusEn": "Reviewing"
+    }
+  ],
+  "systemConfig": [
+    {
+      "id": "CFG001",
+      "key": "company_name",
+      "value": "上海航运有限公司",
+      "description": "公司名称",
+      "descriptionEn": "Company Name",
+      "updateTime": "2024-01-01"
+    },
+    {
+      "id": "CFG002",
+      "key": "currency",
+      "value": "CNY",
+      "description": "默认货币",
+      "descriptionEn": "Default Currency",
+      "updateTime": "2024-01-01"
+    },
+    {
+      "id": "CFG003",
+      "key": "language",
+      "value": "zh-CN",
+      "description": "系统语言",
+      "descriptionEn": "System Language",
+      "updateTime": "2024-01-01"
+    },
+    {
+      "id": "CFG004",
+      "key": "maint_reminder_days",
+      "value": "30",
+      "description": "维保提前提醒天数",
+      "descriptionEn": "Maintenance reminder days",
+      "updateTime": "2024-03-15"
+    }
+  ]
+}
