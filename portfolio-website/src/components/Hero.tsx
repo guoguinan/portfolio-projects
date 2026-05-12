@@ -28,7 +28,7 @@ export default function Hero() {
             郭贵南 <span className="block text-2xl sm:text-3xl md:text-4xl font-normal text-slate-500 dark:text-slate-400 mt-2">Henry Guo</span>
           </h1>
           <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 mb-4 font-light">
-            高级前端工程师 <span className="block text-lg sm:text-xl text-slate-500 dark:text-slate-400 mt-1 font-normal">Senior Frontend Engineer</span>
+            高级前端工程师
           </p>
           <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
             I build exceptional digital experiences with modern web technologies.
