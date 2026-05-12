@@ -126,12 +126,99 @@ const mockShipList = [
   { name: "MS Arctic Wind", type: "LNG船", typeEn: "LNG Carrier", status: "在航", statusEn: "Sailing", lastPort: "Qatar", nextPort: "Japan" },
 ];
 
+const mockShipEquipment = [
+  { id: "E001", name: "主发动机", nameEn: "Main Engine", ship: "MS Ocean Star", type: "动力设备", typeEn: "Power", status: "正常", statusEn: "Normal", lastMaint: "2024-03-15", nextMaint: "2024-09-15" },
+  { id: "E002", name: "辅助发电机", nameEn: "Generator", ship: "MS Pacific Wave", type: "电力设备", typeEn: "Electrical", status: "正常", statusEn: "Normal", lastMaint: "2024-02-20", nextMaint: "2024-08-20" },
+  { id: "E003", name: "雷达系统", nameEn: "Radar System", ship: "MS Atlantic Eagle", type: "导航设备", typeEn: "Navigation", status: "维修中", statusEn: "Repairing", lastMaint: "2024-01-10", nextMaint: "2024-07-10" },
+  { id: "E004", name: "锚机", nameEn: "Windlass", ship: "MS Arctic Wind", type: "甲板设备", typeEn: "Deck", status: "正常", statusEn: "Normal", lastMaint: "2024-04-01", nextMaint: "2024-10-01" },
+];
+
+const mockShipCerts = [
+  { id: "C001", name: "船舶国籍证书", nameEn: "Nationality Cert", ship: "MS Ocean Star", issueDate: "2020-05-20", expiryDate: "2025-05-20", status: "有效", statusEn: "Valid" },
+  { id: "C002", name: "船级证书", nameEn: "Class Cert", ship: "MS Pacific Wave", issueDate: "2019-08-15", expiryDate: "2024-08-15", status: "即将到期", statusEn: "Expiring Soon" },
+  { id: "C003", name: "安全管理证书", nameEn: "SMC", ship: "MS Atlantic Eagle", issueDate: "2021-03-10", expiryDate: "2026-03-10", status: "有效", statusEn: "Valid" },
+  { id: "C004", name: "国际载重线证书", nameEn: "Load Line Cert", ship: "MS Arctic Wind", issueDate: "2022-01-05", expiryDate: "2027-01-05", status: "有效", statusEn: "Valid" },
+];
+
+const mockWorkOrders = [
+  { id: "WO001", title: "主机例行保养", titleEn: "Main Engine Maintenance", ship: "MS Ocean Star", assignee: "张工程师", assigneeEn: "Engineer Zhang", priority: "高", priorityEn: "High", status: "进行中", statusEn: "In Progress", dueDate: "2024-05-20" },
+  { id: "WO002", title: "甲板油漆作业", titleEn: "Deck Painting", ship: "MS Pacific Wave", assignee: "李技工", assigneeEn: "Tech Li", priority: "中", priorityEn: "Medium", status: "待分配", statusEn: "Pending", dueDate: "2024-05-25" },
+  { id: "WO003", title: "电气系统检修", titleEn: "Electrical Inspection", ship: "MS Atlantic Eagle", assignee: "王电工", assigneeEn: "Electrician Wang", priority: "高", priorityEn: "High", status: "已完成", statusEn: "Completed", dueDate: "2024-05-10" },
+  { id: "WO004", title: "消防设备检查", titleEn: "Fire Safety Check", ship: "MS Arctic Wind", assignee: "赵安全员", assigneeEn: "Safety Officer Zhao", priority: "低", priorityEn: "Low", status: "进行中", statusEn: "In Progress", dueDate: "2024-05-30" },
+];
+
+const mockRepairOrders = [
+  { id: "R001", title: "船体裂缝修补", titleEn: "Hull Crack Repair", ship: "MS Atlantic Eagle", type: "航修", typeEn: "Voyage Repair", cost: 85000, status: "审批中", statusEn: "Approving", applyDate: "2024-05-01" },
+  { id: "R002", title: "螺旋桨更换", titleEn: "Propeller Replacement", ship: "MS Ocean Star", type: "厂修", typeEn: "Dock Repair", cost: 320000, status: "已批准", statusEn: "Approved", applyDate: "2024-04-20" },
+  { id: "R003", title: "舵机系统维修", titleEn: "Steering Gear Repair", ship: "MS Pacific Wave", type: "航修", typeEn: "Voyage Repair", cost: 156000, status: "已完成", statusEn: "Completed", applyDate: "2024-03-15" },
+];
+
+const mockStock = [
+  { id: "S001", name: "主机润滑油", nameEn: "Engine Oil", category: "油品", categoryEn: "Oil", quantity: 500, unit: "升", unitEn: "L", minStock: 200, location: "A仓库", locationEn: "Warehouse A" },
+  { id: "S002", name: "轴承", nameEn: "Bearing", category: "机械备件", categoryEn: "Mechanical", quantity: 24, unit: "个", unitEn: "pcs", minStock: 10, location: "B仓库", locationEn: "Warehouse B" },
+  { id: "S003", name: "密封圈套装", nameEn: "Seal Kit", category: "密封件", categoryEn: "Seal", quantity: 8, unit: "套", unitEn: "set", minStock: 5, location: "A仓库", locationEn: "Warehouse A" },
+  { id: "S004", name: "滤芯", nameEn: "Filter", category: "消耗品", categoryEn: "Consumable", quantity: 45, unit: "个", unitEn: "pcs", minStock: 20, location: "C仓库", locationEn: "Warehouse C" },
+];
+
+const mockPurchaseApply = [
+  { id: "PA001", title: "Q2主机备件采购", titleEn: "Q2 Engine Spares", applicant: "张工程师", applicantEn: "Eng. Zhang", amount: 125000, status: "审批中", statusEn: "Approving", applyDate: "2024-05-05" },
+  { id: "PA002", title: "导航设备更新", titleEn: "Nav Equipment Update", applicant: "李船长", applicantEn: "Capt. Li", amount: 280000, status: "已批准", statusEn: "Approved", applyDate: "2024-04-28" },
+  { id: "PA003", title: "安全设备补充", titleEn: "Safety Equipment", applicant: "王安全员", applicantEn: "Safety Wang", amount: 45000, status: "已完成", statusEn: "Completed", applyDate: "2024-04-15" },
+];
+
+const mockSuppliers = [
+  { id: "SUP001", name: "上海船舶设备有限公司", nameEn: "Shanghai Marine Equip", contact: "刘先生", contactEn: "Mr. Liu", phone: "+86-21-5888-9999", email: "sales@shmarine.com", rating: 4.8, cooperation: "5年", cooperationEn: "5 Years" },
+  { id: "SUP002", name: "大连海事配件厂", nameEn: "Dalian Marine Parts", contact: "陈女士", contactEn: "Ms. Chen", phone: "+86-411-8666-7777", email: "order@dlmarine.com", rating: 4.5, cooperation: "3年", cooperationEn: "3 Years" },
+  { id: "SUP003", name: "Singapore Marine Pte Ltd", nameEn: "Singapore Marine", contact: "John Tan", contactEn: "John Tan", phone: "+65-6789-0123", email: "john@sgmarine.sg", rating: 4.9, cooperation: "7年", cooperationEn: "7 Years" },
+];
+
+const mockCrewList = [
+  { id: "CR001", name: "李明", nameEn: "Li Ming", position: "船长", positionEn: "Captain", ship: "MS Ocean Star", nationality: "中国", nationalityEn: "China", certExpiry: "2026-08-20", status: "在船", statusEn: "On Board" },
+  { id: "CR002", name: "王强", nameEn: "Wang Qiang", position: "大副", positionEn: "Chief Officer", ship: "MS Pacific Wave", nationality: "中国", nationalityEn: "China", certExpiry: "2025-12-15", status: "在船", statusEn: "On Board" },
+  { id: "CR003", name: "Tom Johnson", nameEn: "Tom Johnson", position: "轮机长", positionEn: "Chief Engineer", ship: "MS Atlantic Eagle", nationality: "英国", nationalityEn: "UK", certExpiry: "2025-06-30", status: "休假", statusEn: "On Leave" },
+  { id: "CR004", name: "张伟", nameEn: "Zhang Wei", position: "二副", positionEn: "2nd Officer", ship: "MS Arctic Wind", nationality: "中国", nationalityEn: "China", certExpiry: "2027-02-10", status: "在船", statusEn: "On Board" },
+];
+
+const mockCrewCerts = [
+  { id: "CC001", holder: "李明", holderEn: "Li Ming", certType: "船长适任证书", certTypeEn: "Master License", certNo: "BMC2020-001", issueDate: "2020-06-01", expiryDate: "2025-06-01", status: "有效", statusEn: "Valid" },
+  { id: "CC002", holder: "王强", holderEn: "Wang Qiang", certType: "大副适任证书", certTypeEn: "Chief Mate License", certNo: "BMC2019-045", issueDate: "2019-09-15", expiryDate: "2024-09-15", status: "即将到期", statusEn: "Expiring" },
+  { id: "CC003", holder: "Tom Johnson", holderEn: "Tom Johnson", certType: "轮机长证书", certTypeEn: "Chief Eng. License", certNo: "UK-CE-2018-112", issueDate: "2018-04-20", expiryDate: "2028-04-20", status: "有效", statusEn: "Valid" },
+];
+
+const mockCostData = [
+  { month: "2024-01", maintCost: 320000, repairCost: 180000, purchaseCost: 450000, fuelCost: 1200000 },
+  { month: "2024-02", maintCost: 280000, repairCost: 220000, purchaseCost: 380000, fuelCost: 1150000 },
+  { month: "2024-03", maintCost: 350000, repairCost: 150000, purchaseCost: 520000, fuelCost: 1300000 },
+  { month: "2024-04", maintCost: 300000, repairCost: 280000, purchaseCost: 410000, fuelCost: 1250000 },
+];
+
+type ViewType =
+  | "dashboard"
+  | "ship-info"
+  | "ship-equipment"
+  | "ship-cert"
+  | "ship-maint"
+  | "maintenance"
+  | "work-order"
+  | "repair-order"
+  | "stock"
+  | "purchase-apply"
+  | "purchase-approval"
+  | "supplier"
+  | "crew-list"
+  | "crew-cert"
+  | "crew-salary"
+  | "maint-board"
+  | "cost-analysis"
+  | "documents"
+  | "system";
+
 export default function ShipbizDashboard() {
   const { t, lang } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [openKeys, setOpenKeys] = useState<string[]>(["ship"]);
   const [selectedKey, setSelectedKey] = useState("dashboard");
-  const [currentView, setCurrentView] = useState<"dashboard" | "ship-info" | "maintenance">("dashboard");
+  const [currentView, setCurrentView] = useState<ViewType>("dashboard");
 
   const toggleOpen = (key: string) => {
     setOpenKeys((prev) =>
@@ -141,9 +228,28 @@ export default function ShipbizDashboard() {
 
   const handleMenuClick = (key: string) => {
     setSelectedKey(key);
-    if (key === "dashboard") setCurrentView("dashboard");
-    else if (key === "ship-info") setCurrentView("ship-info");
-    else if (key === "maint-plan") setCurrentView("maintenance");
+    const viewMap: Record<string, ViewType> = {
+      dashboard: "dashboard",
+      "ship-info": "ship-info",
+      "ship-equipment": "ship-equipment",
+      "ship-cert": "ship-cert",
+      "ship-maint": "ship-maint",
+      "maint-plan": "maintenance",
+      "work-order": "work-order",
+      "repair-order": "repair-order",
+      stock: "stock",
+      "purchase-apply": "purchase-apply",
+      "purchase-approval": "purchase-approval",
+      supplier: "supplier",
+      "crew-list": "crew-list",
+      "crew-cert": "crew-cert",
+      "crew-salary": "crew-salary",
+      "maint-board": "maint-board",
+      "cost-analysis": "cost-analysis",
+      documents: "documents",
+      system: "system",
+    };
+    setCurrentView(viewMap[key] || "dashboard");
   };
 
   return (
@@ -186,13 +292,12 @@ export default function ShipbizDashboard() {
                     <span className="flex-1 text-left text-sm">
                       {lang === "zh" ? item.label : item.labelEn}
                     </span>
-                    {item.children && (
-                      openKeys.includes(item.key) ? (
+                    {item.children &&
+                      (openKeys.includes(item.key) ? (
                         <ChevronDown className="w-4 h-4" />
                       ) : (
                         <ChevronRight className="w-4 h-4" />
-                      )
-                    )}
+                      ))}
                   </>
                 )}
               </button>
@@ -222,7 +327,11 @@ export default function ShipbizDashboard() {
           onClick={() => setCollapsed(!collapsed)}
           className="h-10 flex items-center justify-center border-t border-white/10 hover:bg-white/5"
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4 rotate-90" />}
+          {collapsed ? (
+            <ChevronRight className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4 rotate-90" />
+          )}
         </button>
       </aside>
 
@@ -236,7 +345,9 @@ export default function ShipbizDashboard() {
               className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm">{t("返回作品集", "Back to Portfolio")}</span>
+              <span className="text-sm">
+                {t("返回作品集", "Back to Portfolio")}
+              </span>
             </Link>
             <div className="w-px h-6 bg-slate-200" />
             <h1 className="text-lg font-semibold text-slate-800">
@@ -244,7 +355,9 @@ export default function ShipbizDashboard() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-500">{t("管理员", "Admin")}: 郭贵南</span>
+            <span className="text-sm text-slate-500">
+              {t("管理员", "Admin")}: 郭贵南
+            </span>
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
               郭
             </div>
@@ -255,12 +368,30 @@ export default function ShipbizDashboard() {
         <div className="flex-1 p-6 overflow-auto">
           {currentView === "dashboard" && <DashboardView lang={lang} />}
           {currentView === "ship-info" && <ShipInfoView lang={lang} />}
+          {currentView === "ship-equipment" && <ShipEquipmentView lang={lang} />}
+          {currentView === "ship-cert" && <ShipCertView lang={lang} />}
+          {currentView === "ship-maint" && <ShipMaintView lang={lang} />}
           {currentView === "maintenance" && <MaintenanceView lang={lang} />}
+          {currentView === "work-order" && <WorkOrderView lang={lang} />}
+          {currentView === "repair-order" && <RepairOrderView lang={lang} />}
+          {currentView === "stock" && <StockView lang={lang} />}
+          {currentView === "purchase-apply" && <PurchaseApplyView lang={lang} />}
+          {currentView === "purchase-approval" && <PurchaseApprovalView lang={lang} />}
+          {currentView === "supplier" && <SupplierView lang={lang} />}
+          {currentView === "crew-list" && <CrewListView lang={lang} />}
+          {currentView === "crew-cert" && <CrewCertView lang={lang} />}
+          {currentView === "crew-salary" && <CrewSalaryView lang={lang} />}
+          {currentView === "maint-board" && <MaintBoardView lang={lang} />}
+          {currentView === "cost-analysis" && <CostAnalysisView lang={lang} />}
+          {currentView === "documents" && <DocumentsView lang={lang} />}
+          {currentView === "system" && <SystemView lang={lang} />}
         </div>
       </main>
     </div>
   );
 }
+
+/* ================= Views ================= */
 
 function DashboardView({ lang }: { lang: string }) {
   return (
@@ -282,10 +413,16 @@ function DashboardView({ lang }: { lang: string }) {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-500">{lang === "zh" ? stat.label : stat.labelEn}</p>
-                <p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
+                <p className="text-sm text-slate-500">
+                  {lang === "zh" ? stat.label : stat.labelEn}
+                </p>
+                <p className="text-3xl font-bold text-slate-800 mt-1">
+                  {stat.value}
+                </p>
               </div>
-              <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+              <div
+                className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}
+              >
                 <Ship className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -304,8 +441,15 @@ function DashboardView({ lang }: { lang: string }) {
           </div>
           <div className="divide-y divide-slate-100">
             {mockTodoList.map((todo) => (
-              <div key={todo.id} className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50">
-                <div className={`w-2 h-2 rounded-full ${todo.urgent ? "bg-red-500" : "bg-blue-500"}`} />
+              <div
+                key={todo.id}
+                className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50"
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    todo.urgent ? "bg-red-500" : "bg-blue-500"
+                  }`}
+                />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-slate-800">
                     {lang === "zh" ? todo.title : todo.titleEn}
@@ -336,9 +480,12 @@ function DashboardView({ lang }: { lang: string }) {
               <div key={ship.name} className="px-6 py-4 hover:bg-slate-50">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-800">{ship.name}</p>
+                    <p className="text-sm font-medium text-slate-800">
+                      {ship.name}
+                    </p>
                     <p className="text-xs text-slate-500">
-                      {lang === "zh" ? ship.type : ship.typeEn} · {ship.lastPort} → {ship.nextPort}
+                      {lang === "zh" ? ship.type : ship.typeEn} · {ship.lastPort}{" "}
+                      → {ship.nextPort}
                     </p>
                   </div>
                   <span
@@ -382,32 +529,58 @@ function ShipInfoView({ lang }: { lang: string }) {
           <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "船名" : "Ship Name"}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "类型" : "Type"}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "状态" : "Status"}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "上一港" : "Last Port"}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "下一港" : "Next Port"}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "操作" : "Actions"}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "船名" : "Ship Name"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "类型" : "Type"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "上一港" : "Last Port"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "下一港" : "Next Port"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "操作" : "Actions"}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {mockShipList.map((ship) => (
                 <tr key={ship.name} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">{ship.name}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{lang === "zh" ? ship.type : ship.typeEn}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {ship.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? ship.type : ship.typeEn}
+                  </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-0.5 text-xs rounded ${
-                      ship.status === "在航" ? "bg-green-100 text-green-600" :
-                      ship.status === "维修" ? "bg-orange-100 text-orange-600" :
-                      "bg-blue-100 text-blue-600"
-                    }`}>
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        ship.status === "在航"
+                          ? "bg-green-100 text-green-600"
+                          : ship.status === "维修"
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-blue-100 text-blue-600"
+                      }`}
+                    >
                       {lang === "zh" ? ship.status : ship.statusEn}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{ship.lastPort}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{ship.nextPort}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {ship.lastPort}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {ship.nextPort}
+                  </td>
                   <td className="px-6 py-4">
-                    <button className="text-blue-500 hover:text-blue-600 text-sm">{lang === "zh" ? "详情" : "Detail"}</button>
+                    <button className="text-blue-500 hover:text-blue-600 text-sm">
+                      {lang === "zh" ? "详情" : "Detail"}
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -419,12 +592,208 @@ function ShipInfoView({ lang }: { lang: string }) {
   );
 }
 
+function ShipEquipmentView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "船舶设备" : "Ship Equipment"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新增设备" : "Add Equipment"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "设备编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "设备名称" : "Name"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "所属船舶" : "Ship"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "类型" : "Type"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "下次保养" : "Next Maint."}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockShipEquipment.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.name : item.nameEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.ship}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.type : item.typeEn}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "正常"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {item.nextMaint}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function ShipCertView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "船舶证书" : "Ship Certificates"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新增证书" : "Add Cert"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "证书编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "证书名称" : "Name"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "船舶" : "Ship"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "签发日期" : "Issue Date"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "到期日期" : "Expiry"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockShipCerts.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.name : item.nameEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.ship}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.issueDate}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.expiryDate}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "有效"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function ShipMaintView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+        <Wrench className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          {lang === "zh" ? "船舶维保" : "Ship Maintenance"}
+        </h3>
+        <p className="text-slate-500">
+          {lang === "zh"
+            ? "维保记录管理模块 - 开发中"
+            : "Maintenance record management - In Development"}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
 function MaintenanceView({ lang }: { lang: string }) {
   const maintData = [
-    { name: "MS Ocean Star", plan: "年度检验", planEn: "Annual Survey", status: "进行中", statusEn: "In Progress", progress: 65 },
-    { name: "MS Pacific Wave", plan: "中间检验", planEn: "Intermediate Survey", status: "待开始", statusEn: "Pending", progress: 0 },
-    { name: "MS Atlantic Eagle", plan: "坞修", planEn: "Dock Repair", status: "已完成", statusEn: "Completed", progress: 100 },
-    { name: "MS Arctic Wind", plan: "特别检验", planEn: "Special Survey", status: "进行中", statusEn: "In Progress", progress: 30 },
+    {
+      name: "MS Ocean Star",
+      plan: "年度检验",
+      planEn: "Annual Survey",
+      status: "进行中",
+      statusEn: "In Progress",
+      progress: 65,
+    },
+    {
+      name: "MS Pacific Wave",
+      plan: "中间检验",
+      planEn: "Intermediate Survey",
+      status: "待开始",
+      statusEn: "Pending",
+      progress: 0,
+    },
+    {
+      name: "MS Atlantic Eagle",
+      plan: "坞修",
+      planEn: "Dock Repair",
+      status: "已完成",
+      statusEn: "Completed",
+      progress: 100,
+    },
+    {
+      name: "MS Arctic Wind",
+      plan: "特别检验",
+      planEn: "Special Survey",
+      status: "进行中",
+      statusEn: "In Progress",
+      progress: 30,
+    },
   ];
 
   return (
@@ -447,7 +816,9 @@ function MaintenanceView({ lang }: { lang: string }) {
             transition={{ delay: index * 0.1 }}
             className="bg-white rounded-lg p-6 shadow-sm"
           >
-            <p className="text-sm text-slate-500">{lang === "zh" ? stat.label : stat.labelEn}</p>
+            <p className="text-sm text-slate-500">
+              {lang === "zh" ? stat.label : stat.labelEn}
+            </p>
             <p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
             <div className={`h-1 ${stat.color} rounded-full mt-3`} />
           </motion.div>
@@ -466,21 +837,30 @@ function MaintenanceView({ lang }: { lang: string }) {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-sm font-medium text-slate-800">{item.name}</p>
-                  <p className="text-xs text-slate-500">{lang === "zh" ? item.plan : item.planEn}</p>
+                  <p className="text-xs text-slate-500">
+                    {lang === "zh" ? item.plan : item.planEn}
+                  </p>
                 </div>
-                <span className={`px-2 py-0.5 text-xs rounded ${
-                  item.status === "已完成" ? "bg-green-100 text-green-600" :
-                  item.status === "进行中" ? "bg-blue-100 text-blue-600" :
-                  "bg-orange-100 text-orange-600"
-                }`}>
+                <span
+                  className={`px-2 py-0.5 text-xs rounded ${
+                    item.status === "已完成"
+                      ? "bg-green-100 text-green-600"
+                      : item.status === "进行中"
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-orange-100 text-orange-600"
+                  }`}
+                >
                   {lang === "zh" ? item.status : item.statusEn}
                 </span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all ${
-                    item.progress === 100 ? "bg-green-500" :
-                    item.progress > 0 ? "bg-blue-500" : "bg-slate-300"
+                    item.progress === 100
+                      ? "bg-green-500"
+                      : item.progress > 0
+                      ? "bg-blue-500"
+                      : "bg-slate-300"
                   }`}
                   style={{ width: `${item.progress}%` }}
                 />
@@ -488,6 +868,756 @@ function MaintenanceView({ lang }: { lang: string }) {
             </div>
           ))}
         </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function WorkOrderView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "工作卡管理" : "Work Orders"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新建工单" : "New Order"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "工单号" : "WO #"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "标题" : "Title"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "船舶" : "Ship"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "负责人" : "Assignee"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "优先级" : "Priority"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "截止日期" : "Due Date"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockWorkOrders.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.title : item.titleEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.ship}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.assignee : item.assigneeEn}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.priority === "高"
+                          ? "bg-red-100 text-red-600"
+                          : item.priority === "中"
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-blue-100 text-blue-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.priority : item.priorityEn}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "已完成"
+                          ? "bg-green-100 text-green-600"
+                          : item.status === "进行中"
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.dueDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function RepairOrderView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "维修工单" : "Repair Orders"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新建工单" : "New Order"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "工单号" : "RO #"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "标题" : "Title"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "船舶" : "Ship"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "类型" : "Type"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "费用" : "Cost"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockRepairOrders.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.title : item.titleEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.ship}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.type : item.typeEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    ¥{item.cost.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "已完成"
+                          ? "bg-green-100 text-green-600"
+                          : item.status === "已批准"
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function StockView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "库存管理" : "Inventory"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "入库" : "Stock In"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "物料编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "物料名称" : "Name"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "类别" : "Category"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "库存量" : "Qty"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "单位" : "Unit"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "安全库存" : "Min Stock"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "存放位置" : "Location"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockStock.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.name : item.nameEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.category : item.categoryEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {item.quantity}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.unit : item.unitEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.minStock}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.location : item.locationEn}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function PurchaseApplyView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "采购申请" : "Purchase Applications"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新建申请" : "New Apply"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "申请编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "标题" : "Title"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "申请人" : "Applicant"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "金额" : "Amount"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "申请日期" : "Date"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockPurchaseApply.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.title : item.titleEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.applicant : item.applicantEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    ¥{item.amount.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "已完成"
+                          ? "bg-green-100 text-green-600"
+                          : item.status === "已批准"
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.applyDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function PurchaseApprovalView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+        <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          {lang === "zh" ? "采购审批" : "Purchase Approval"}
+        </h3>
+        <p className="text-slate-500">
+          {lang === "zh"
+            ? "采购审批流程管理 - 开发中"
+            : "Purchase approval workflow - In Development"}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+function SupplierView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "供应商管理" : "Suppliers"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新增供应商" : "Add Supplier"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "供应商名称" : "Name"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "联系人" : "Contact"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "电话" : "Phone"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "评分" : "Rating"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "合作时长" : "Cooperation"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockSuppliers.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.name : item.nameEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.contact : item.contactEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.phone}</td>
+                  <td className="px-6 py-4">
+                    <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded">
+                      {item.rating}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.cooperation : item.cooperationEn}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function CrewListView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "船员名单" : "Crew List"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新增船员" : "Add Crew"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "姓名" : "Name"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "职位" : "Position"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "船舶" : "Ship"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "国籍" : "Nationality"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "证书到期" : "Cert Expiry"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockCrewList.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.name : item.nameEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.position : item.positionEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.ship}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.nationality : item.nationalityEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.certExpiry}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "在船"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function CrewCertView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "船员证书" : "Crew Certificates"}
+          </h3>
+          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+            {lang === "zh" ? "新增证书" : "Add Cert"}
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "编号" : "ID"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "持证人" : "Holder"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "证书类型" : "Type"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "证书号" : "Cert No."}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "签发日期" : "Issue"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "到期日期" : "Expiry"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "状态" : "Status"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockCrewCerts.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {lang === "zh" ? item.holder : item.holderEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    {lang === "zh" ? item.certType : item.certTypeEn}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.certNo}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.issueDate}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{item.expiryDate}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        item.status === "有效"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}
+                    >
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function CrewSalaryView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+        <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          {lang === "zh" ? "薪资管理" : "Salary Management"}
+        </h3>
+        <p className="text-slate-500">
+          {lang === "zh"
+            ? "船员薪资管理模块 - 开发中"
+            : "Crew salary management - In Development"}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+function MaintBoardView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        {[
+          { label: "本月计划", labelEn: "Monthly Plan", value: 12, color: "bg-blue-500" },
+          { label: "已完成", labelEn: "Completed", value: 8, color: "bg-green-500" },
+          { label: "进行中", labelEn: "In Progress", value: 4, color: "bg-orange-500" },
+          { label: "逾期", labelEn: "Overdue", value: 0, color: "bg-red-500" },
+        ].map((stat, index) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="bg-white rounded-lg p-6 shadow-sm"
+          >
+            <p className="text-sm text-slate-500">
+              {lang === "zh" ? stat.label : stat.labelEn}
+            </p>
+            <p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
+            <div className={`h-1 ${stat.color} rounded-full mt-3`} />
+          </motion.div>
+        ))}
+      </div>
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+        <BarChart3 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          {lang === "zh" ? "维保看板" : "Maintenance Board"}
+        </h3>
+        <p className="text-slate-500">
+          {lang === "zh"
+            ? "可视化维保数据分析 - 开发中"
+            : "Visual maintenance analytics - In Development"}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+function CostAnalysisView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "费用分析" : "Cost Analysis"}
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "月份" : "Month"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "维保费用" : "Maintenance"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "维修费用" : "Repair"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "采购费用" : "Purchase"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "燃油费用" : "Fuel"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "合计" : "Total"}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {mockCostData.map((item) => (
+                <tr key={item.month} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    {item.month}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    ¥{item.maintCost.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    ¥{item.repairCost.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    ¥{item.purchaseCost.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-600">
+                    ¥{item.fuelCost.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                    ¥
+                    {(
+                      item.maintCost +
+                      item.repairCost +
+                      item.purchaseCost +
+                      item.fuelCost
+                    ).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function DocumentsView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+        <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          {lang === "zh" ? "体系文件" : "Documents"}
+        </h3>
+        <p className="text-slate-500">
+          {lang === "zh"
+            ? "体系文件管理模块 - 开发中"
+            : "Document management - In Development"}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+function SystemView({ lang }: { lang: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+        <Settings className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          {lang === "zh" ? "系统配置" : "System Config"}
+        </h3>
+        <p className="text-slate-500">
+          {lang === "zh"
+            ? "系统配置管理模块 - 开发中"
+            : "System configuration - In Development"}
+        </p>
       </div>
     </motion.div>
   );
