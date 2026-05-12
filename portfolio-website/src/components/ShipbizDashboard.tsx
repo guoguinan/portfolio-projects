@@ -19,6 +19,8 @@ import {
   Trash2,
   X,
   Check,
+  Bell,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageProvider";
@@ -1762,7 +1764,154 @@ function CrewSalaryView({ lang }: { lang: string }) {
   );
 }
 
+interface MaintPlan {
+  id: string;
+  shipName: string;
+  equipment: string;
+  equipmentEn: string;
+  maintItem: string;
+  maintItemEn: string;
+  cwbtCode: string;
+  period: string;
+  periodEn: string;
+  lastDate: string;
+  nextDate: string;
+  status: string;
+  statusEn: string;
+  progress: number;
+  assignee: string;
+  assigneeEn: string;
+}
+
+const mockMaintPlans: MaintPlan[] = [
+  {
+    id: "MP001",
+    shipName: "MS Ocean Star",
+    equipment: "主发动机",
+    equipmentEn: "Main Engine",
+    maintItem: "主机例行保养",
+    maintItemEn: "Engine Routine Maint.",
+    cwbtCode: "CWBT-ME-001",
+    period: "月度",
+    periodEn: "Monthly",
+    lastDate: "2024-04-15",
+    nextDate: "2024-05-15",
+    status: "进行中",
+    statusEn: "In Progress",
+    progress: 65,
+    assignee: "张工程师",
+    assigneeEn: "Eng. Zhang",
+  },
+  {
+    id: "MP002",
+    shipName: "MS Pacific Wave",
+    equipment: "辅助发电机",
+    equipmentEn: "Generator",
+    maintItem: "发电机绝缘检测",
+    maintItemEn: "Generator Insulation Test",
+    cwbtCode: "CWBT-EG-003",
+    period: "季度",
+    periodEn: "Quarterly",
+    lastDate: "2024-02-20",
+    nextDate: "2024-05-20",
+    status: "待开始",
+    statusEn: "Pending",
+    progress: 0,
+    assignee: "李电工",
+    assigneeEn: "Electrician Li",
+  },
+  {
+    id: "MP003",
+    shipName: "MS Atlantic Eagle",
+    equipment: "雷达系统",
+    equipmentEn: "Radar System",
+    maintItem: "雷达天线检修",
+    maintItemEn: "Radar Antenna Maint.",
+    cwbtCode: "CWBT-NV-005",
+    period: "半年度",
+    periodEn: "Semi-Annual",
+    lastDate: "2023-11-10",
+    nextDate: "2024-05-10",
+    status: "已逾期",
+    statusEn: "Overdue",
+    progress: 0,
+    assignee: "王技术员",
+    assigneeEn: "Tech Wang",
+  },
+  {
+    id: "MP004",
+    shipName: "MS Arctic Wind",
+    equipment: "锚机",
+    equipmentEn: "Windlass",
+    maintItem: "锚机液压系统保养",
+    maintItemEn: "Windlass Hydraulic Maint.",
+    cwbtCode: "CWBT-DE-012",
+    period: "年度",
+    periodEn: "Annual",
+    lastDate: "2023-05-01",
+    nextDate: "2024-05-01",
+    status: "已完成",
+    statusEn: "Completed",
+    progress: 100,
+    assignee: "赵技工",
+    assigneeEn: "Tech Zhao",
+  },
+  {
+    id: "MP005",
+    shipName: "MS Ocean Star",
+    equipment: "消防泵",
+    equipmentEn: "Fire Pump",
+    maintItem: "消防泵功能测试",
+    maintItemEn: "Fire Pump Function Test",
+    cwbtCode: "CWBT-SF-008",
+    period: "月度",
+    periodEn: "Monthly",
+    lastDate: "2024-04-20",
+    nextDate: "2024-05-20",
+    status: "待开始",
+    statusEn: "Pending",
+    progress: 0,
+    assignee: "孙安全员",
+    assigneeEn: "Safety Sun",
+  },
+];
+
+const mockMaintAlerts = [
+  { id: 1, ship: "MS Atlantic Eagle", item: "雷达天线检修", itemEn: "Radar Antenna Maint.", days: -2, type: "逾期", typeEn: "Overdue", level: "high" },
+  { id: 2, ship: "MS Pacific Wave", item: "发电机绝缘检测", itemEn: "Generator Insulation Test", days: 8, type: "即将到期", typeEn: "Due Soon", level: "medium" },
+  { id: 3, ship: "MS Ocean Star", item: "消防泵功能测试", itemEn: "Fire Pump Function Test", days: 12, type: "即将到期", typeEn: "Due Soon", level: "medium" },
+  { id: 4, ship: "MS Arctic Wind", item: "舵机系统保养", itemEn: "Steering Gear Maint.", days: 25, type: "预警", typeEn: "Warning", level: "low" },
+];
+
+const mockMaintCalendar = [
+  { week: "第1周", weekEn: "Week 1", items: 3, completed: 2 },
+  { week: "第2周", weekEn: "Week 2", items: 4, completed: 1 },
+  { week: "第3周", weekEn: "Week 3", items: 2, completed: 0 },
+  { week: "第4周", weekEn: "Week 4", items: 3, completed: 0 },
+];
+
 function MaintBoardView({ lang }: { lang: string }) {
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+
+  const filteredPlans = filterStatus === "all"
+    ? mockMaintPlans
+    : mockMaintPlans.filter(p => p.status === filterStatus);
+
+  const stats = [
+    { label: "本月计划", labelEn: "Monthly Plan", value: mockMaintPlans.length, color: "bg-blue-500" },
+    { label: "已完成", labelEn: "Completed", value: mockMaintPlans.filter(p => p.status === "已完成").length, color: "bg-green-500" },
+    { label: "进行中", labelEn: "In Progress", value: mockMaintPlans.filter(p => p.status === "进行中").length, color: "bg-orange-500" },
+    { label: "已逾期", labelEn: "Overdue", value: mockMaintPlans.filter(p => p.status === "已逾期").length, color: "bg-red-500" },
+  ];
+
+  const statusFilters = [
+    { key: "all", label: "全部", labelEn: "All" },
+    { key: "进行中", label: "进行中", labelEn: "In Progress" },
+    { key: "待开始", label: "待开始", labelEn: "Pending" },
+    { key: "已完成", label: "已完成", labelEn: "Completed" },
+    { key: "已逾期", label: "已逾期", labelEn: "Overdue" },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -1770,13 +1919,9 @@ function MaintBoardView({ lang }: { lang: string }) {
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        {[
-          { label: "本月计划", labelEn: "Monthly Plan", value: 12, color: "bg-blue-500" },
-          { label: "已完成", labelEn: "Completed", value: 8, color: "bg-green-500" },
-          { label: "进行中", labelEn: "In Progress", value: 4, color: "bg-orange-500" },
-          { label: "逾期", labelEn: "Overdue", value: 0, color: "bg-red-500" },
-        ].map((stat, index) => (
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
@@ -1784,24 +1929,177 @@ function MaintBoardView({ lang }: { lang: string }) {
             transition={{ delay: index * 0.1 }}
             className="bg-white rounded-lg p-6 shadow-sm"
           >
-            <p className="text-sm text-slate-500">
-              {lang === "zh" ? stat.label : stat.labelEn}
-            </p>
-            <p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
-            <div className={`h-1 ${stat.color} rounded-full mt-3`} />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-500">{lang === "zh" ? stat.label : stat.labelEn}</p>
+                <p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+                <Wrench className="w-6 h-6 text-white" />
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <BarChart3 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">
-          {lang === "zh" ? "维保看板" : "Maintenance Board"}
-        </h3>
-        <p className="text-slate-500">
-          {lang === "zh"
-            ? "可视化维保数据分析 - 开发中"
-            : "Visual maintenance analytics - In Development"}
-        </p>
+
+      {/* Alert Banner */}
+      {mockMaintAlerts.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+            <Bell className="w-5 h-5 text-orange-500" />
+            {lang === "zh" ? "维保预警" : "Maintenance Alerts"}
+          </h3>
+          <div className="space-y-2">
+            {mockMaintAlerts.map((alert) => (
+              <div
+                key={alert.id}
+                className={`flex items-center justify-between p-3 rounded-lg ${
+                  alert.level === "high"
+                    ? "bg-red-50 border border-red-200"
+                    : alert.level === "medium"
+                    ? "bg-orange-50 border border-orange-200"
+                    : "bg-yellow-50 border border-yellow-200"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className={`w-5 h-5 ${
+                    alert.level === "high" ? "text-red-500" : alert.level === "medium" ? "text-orange-500" : "text-yellow-500"
+                  }`} />
+                  <div>
+                    <p className="text-sm font-medium text-slate-800">
+                      {alert.ship} - {lang === "zh" ? alert.item : alert.itemEn}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {alert.days < 0
+                        ? `${lang === "zh" ? "已逾期" : "Overdue"} ${Math.abs(alert.days)} ${lang === "zh" ? "天" : "days"}`
+                        : `${lang === "zh" ? "还剩" : "Due in"} ${alert.days} ${lang === "zh" ? "天" : "days"}`}
+                    </p>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 text-xs rounded ${
+                  alert.level === "high"
+                    ? "bg-red-100 text-red-600"
+                    : alert.level === "medium"
+                    ? "bg-orange-100 text-orange-600"
+                    : "bg-yellow-100 text-yellow-600"
+                }`}>
+                  {lang === "zh" ? alert.type : alert.typeEn}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Maintenance Plans Table */}
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "维保计划列表" : "Maintenance Plans"}
+          </h3>
+          <div className="flex gap-2">
+            {statusFilters.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFilterStatus(f.key)}
+                className={`px-3 py-1.5 text-sm rounded transition-colors ${
+                  filterStatus === f.key
+                    ? "bg-blue-500 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {lang === "zh" ? f.label : f.labelEn}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "CWBT编号" : "CWBT Code"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "船舶" : "Ship"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "设备" : "Equipment"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "维保项目" : "Maint. Item"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "周期" : "Period"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "下次维保" : "Next Date"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "进度" : "Progress"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "负责人" : "Assignee"}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">{lang === "zh" ? "状态" : "Status"}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredPlans.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 text-sm font-mono text-slate-600">{item.cwbtCode}</td>
+                  <td className="px-4 py-3 text-sm text-slate-800 font-medium">{item.shipName}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{lang === "zh" ? item.equipment : item.equipmentEn}</td>
+                  <td className="px-4 py-3 text-sm text-slate-800">{lang === "zh" ? item.maintItem : item.maintItemEn}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{lang === "zh" ? item.period : item.periodEn}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{item.nextDate}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 bg-slate-100 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            item.progress === 100 ? "bg-green-500" : item.progress > 0 ? "bg-blue-500" : "bg-slate-300"
+                          }`}
+                          style={{ width: `${item.progress}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-slate-500">{item.progress}%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{lang === "zh" ? item.assignee : item.assigneeEn}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 text-xs rounded ${
+                      item.status === "已完成" ? "bg-green-100 text-green-600" :
+                      item.status === "进行中" ? "bg-blue-100 text-blue-600" :
+                      item.status === "已逾期" ? "bg-red-100 text-red-600" :
+                      "bg-orange-100 text-orange-600"
+                    }`}>
+                      {lang === "zh" ? item.status : item.statusEn}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Weekly Calendar */}
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h3 className="font-semibold text-slate-800">
+            {lang === "zh" ? "本月维保日历" : "Monthly Maintenance Calendar"}
+          </h3>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {mockMaintCalendar.map((week) => (
+              <div key={week.week} className="border rounded-lg p-4">
+                <p className="text-sm font-medium text-slate-800 mb-2">{lang === "zh" ? week.week : week.weekEn}</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">{lang === "zh" ? "计划" : "Planned"}</span>
+                    <span className="font-medium text-slate-800">{week.items}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">{lang === "zh" ? "完成" : "Completed"}</span>
+                    <span className="font-medium text-green-600">{week.completed}</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-2 mt-2">
+                    <div
+                      className="bg-green-500 h-2 rounded-full transition-all"
+                      style={{ width: `${week.items > 0 ? (week.completed / week.items) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
