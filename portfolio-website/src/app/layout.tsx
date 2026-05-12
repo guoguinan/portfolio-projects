@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Henry Guo - Senior Frontend Engineer",
+  title: "Henry - Senior Frontend Engineer",
   description:
-    "Portfolio of Henry Guo, a senior frontend engineer specializing in React, Next.js, TypeScript, and modern web technologies.",
+    "Portfolio of Henry, a senior frontend engineer specializing in React, Next.js, TypeScript, and modern web technologies.",
   keywords: [
     "frontend engineer",
     "react developer",
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     "web development",
     "remote work",
   ],
-  authors: [{ name: "Henry Guo" }],
+  authors: [{ name: "Henry" }],
   openGraph: {
-    title: "Henry Guo - Senior Frontend Engineer",
+    title: "Henry - Senior Frontend Engineer",
     description: "Building exceptional digital experiences with modern web technologies.",
     type: "website",
   },
