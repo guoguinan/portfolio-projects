@@ -54,7 +54,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="text-sm text-slate-500 dark:text-slate-400">Email</p>
-                    <p className="text-slate-900 dark:text-white">your.email@example.com</p>
+                    <p className="text-slate-900 dark:text-white">guoguinan@example.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -70,7 +70,7 @@ export default function Contact() {
 
               <div className="flex gap-4">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/guoguinan"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -78,7 +78,7 @@ export default function Contact() {
                   <Github className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://linkedin.com"
+                  href="https://linkedin.com/in/guoguinan"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"

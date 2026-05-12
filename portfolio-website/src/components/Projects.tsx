@@ -10,32 +10,32 @@ const projects = [
     description:
       "A comprehensive admin dashboard for e-commerce platforms with real-time analytics, inventory management, and order processing.",
     tech: ["Next.js", "TypeScript", "Tailwind CSS", "Recharts"],
-    github: "#",
-    demo: "#",
+    github: "https://github.com/guoguinan/portfolio-projects/tree/main/ecommerce-admin",
+    demo: "https://ecommerce-admin-gh-enry.vercel.app",
   },
   {
     title: "Real-time Collaborative Whiteboard",
     description:
       "Multi-user whiteboard application with real-time synchronization, drawing tools, and shape recognition.",
     tech: ["React", "TypeScript", "Canvas API", "WebSocket"],
-    github: "#",
-    demo: "#",
+    github: "https://github.com/guoguinan/portfolio-projects/tree/main/collaborative-whiteboard",
+    demo: "https://collaborative-whiteboard-taupe.vercel.app",
   },
   {
     title: "Social Media Analytics",
     description:
       "Analytics dashboard for tracking social media metrics, engagement rates, and audience growth across platforms.",
     tech: ["React", "D3.js", "Node.js", "PostgreSQL"],
-    github: "#",
-    demo: "#",
+    github: "https://github.com/guoguinan/portfolio-projects/tree/main/social-analytics",
+    demo: "https://social-analytics-rho.vercel.app",
   },
   {
     title: "Task Management System",
     description:
       "Kanban-style task management with drag-and-drop, team collaboration, and progress tracking.",
     tech: ["Next.js", "TypeScript", "DnD Kit", "Prisma"],
-    github: "#",
-    demo: "#",
+    github: "https://github.com/guoguinan/portfolio-projects/tree/main/task-management",
+    demo: "https://task-management-gh-enry.vercel.app",
   },
 ];
 

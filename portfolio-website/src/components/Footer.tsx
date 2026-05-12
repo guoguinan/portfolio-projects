@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            &copy; {new Date().getFullYear()} Guo Guinan. All rights reserved.
+            &copy; {new Date().getFullYear()} 郭贵南 (Guignan). All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
             <span>Built with</span>
@@ -17,7 +17,7 @@ export default function Footer() {
           </div>
           <div className="flex gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/guoguinan"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -26,7 +26,7 @@ export default function Footer() {
               <Github className="w-5 h-5" />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/in/guoguinan"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"

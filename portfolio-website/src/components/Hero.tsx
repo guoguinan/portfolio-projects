@@ -25,7 +25,7 @@ export default function Hero() {
             Hello, I&apos;m
           </h2>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6">
-            Guo Guinan
+            郭贵南 (Guignan)
           </h1>
           <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 mb-4 font-light">
             Senior Frontend Engineer
@@ -54,7 +54,7 @@ export default function Hero() {
           {/* Social Links */}
           <div className="flex justify-center gap-6">
             <a
-              href="https://github.com"
+              href="https://github.com/guoguinan"
               target="_blank"
               rel="noopener noreferrer"
               className="p-3 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -63,7 +63,7 @@ export default function Hero() {
               <Github className="w-6 h-6" />
             </a>
             <a
-              href="https://linkedin.com"
+              href":"https://linkedin.com/in/guoguinan"
               target="_blank"
               rel="noopener noreferrer"
               className="p-3 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -72,7 +72,7 @@ export default function Hero() {
               <Linkedin className="w-6 h-6" />
             </a>
             <a
-              href="mailto:your.email@example.com"
+              href="mailto:guoguinan@example.com"
               className="p-3 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="Email"
             >

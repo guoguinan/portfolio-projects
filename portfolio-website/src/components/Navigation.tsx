@@ -44,7 +44,7 @@ export default function Navigation() {
             href="#hero"
             className="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            GG
+            GN
           </a>
 
           {/* Desktop Navigation */}
