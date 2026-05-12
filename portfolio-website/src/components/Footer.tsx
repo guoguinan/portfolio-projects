@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            &copy; {new Date().getFullYear()} Henry. All rights reserved.
+            &copy; {new Date().getFullYear()} 郭贵南. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
             <span>Built with</span>
@@ -35,7 +35,7 @@ export default function Footer() {
               <Linkedin className="w-5 h-5" />
             </a>
             <a
-              href="mailto:henry@example.com"
+              href="mailto:guoguinan@example.com"
               className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="Email"
             >
