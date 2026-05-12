@@ -44,7 +44,7 @@ export default function Navigation() {
             href="#hero"
             className="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            郭
+            郭贵南 <span className="text-sm font-normal text-slate-500 dark:text-slate-400 ml-1">Henry</span>
           </a>
 
           {/* Desktop Navigation */}

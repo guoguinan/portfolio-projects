@@ -25,10 +25,10 @@ export default function Hero() {
             Hello, I&apos;m
           </h2>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6">
-            郭贵南
+            郭贵南 <span className="block text-2xl sm:text-3xl md:text-4xl font-normal text-slate-500 dark:text-slate-400 mt-2">Henry Guo</span>
           </h1>
           <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 mb-4 font-light">
-            Senior Frontend Engineer
+            高级前端工程师 <span className="block text-lg sm:text-xl text-slate-500 dark:text-slate-400 mt-1 font-normal">Senior Frontend Engineer</span>
           </p>
           <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
             I build exceptional digital experiences with modern web technologies.
