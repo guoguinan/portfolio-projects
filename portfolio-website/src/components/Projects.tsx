@@ -12,6 +12,16 @@ export default function Projects() {
 
   const projects = [
     {
+      title: t("船务管理平台", "Ship Management Platform"),
+      description: t(
+        "基于 Ant Design Pro 的企业级船务管理系统，涵盖船舶管理、维修保养、采购管理、船员管理等核心模块。",
+        "Enterprise-grade ship management system based on Ant Design Pro, covering ship management, maintenance, procurement, and crew management modules."
+      ),
+      tech: ["React", "Ant Design Pro", "UmiJS", "ECharts", "TypeScript"],
+      github: "https://github.com/guoguinan/portfolio-projects",
+      demo: "/shipbiz",
+    },
+    {
       title: t("电商管理后台", "E-Commerce Admin Dashboard"),
       description: t(
         "为电商平台打造的综合后台管理系统，包含实时数据分析、库存管理和订单处理功能。",
