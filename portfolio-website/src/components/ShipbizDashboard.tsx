@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Ship,
@@ -21,6 +21,7 @@ import {
   Check,
   Bell,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageProvider";
@@ -302,10 +303,12 @@ const mockShipList = [
 ];
 
 const mockShipEquipment = [
-  { id: "E001", name: "主发动机", nameEn: "Main Engine", ship: "MS Ocean Star", type: "动力设备", typeEn: "Power", status: "正常", statusEn: "Normal", lastMaint: "2024-03-15", nextMaint: "2024-09-15" },
-  { id: "E002", name: "辅助发电机", nameEn: "Generator", ship: "MS Pacific Wave", type: "电力设备", typeEn: "Electrical", status: "正常", statusEn: "Normal", lastMaint: "2024-02-20", nextMaint: "2024-08-20" },
-  { id: "E003", name: "雷达系统", nameEn: "Radar System", ship: "MS Atlantic Eagle", type: "导航设备", typeEn: "Navigation", status: "维修中", statusEn: "Repairing", lastMaint: "2024-01-10", nextMaint: "2024-07-10" },
-  { id: "E004", name: "锚机", nameEn: "Windlass", ship: "MS Arctic Wind", type: "甲板设备", typeEn: "Deck", status: "正常", statusEn: "Normal", lastMaint: "2024-04-01", nextMaint: "2024-10-01" },
+  { id: "E001", name: "主发动机", nameEn: "Main Engine", ship: "MS Ocean Star", type: "动力设备", typeEn: "Power Equipment", status: "正常", statusEn: "Normal", manufacturer: "MAN B&W", manufacturerEn: "MAN B&W", model: "6S50MC-C7", serialNo: "SN-ME-2021015", installDate: "2020-06-15", lastMaint: "2024-03-15", nextMaint: "2024-09-15", lastInspection: "2024-02-20", runningHours: 32400, spec: "功率 9480kW, 转速 127rpm", specEn: "Power 9480kW, Speed 127rpm", location: "机舱", locationEn: "Engine Room", supplier: "MAN Energy Solutions", warranty: "2025-06-15" },
+  { id: "E002", name: "辅助发电机", nameEn: "Auxiliary Generator", ship: "MS Pacific Wave", type: "电力设备", typeEn: "Electrical Equipment", status: "正常", statusEn: "Normal", manufacturer: "Yanmar", manufacturerEn: "Yanmar", model: "6EY22ALW", serialNo: "SN-GEN-2022089", installDate: "2021-03-10", lastMaint: "2024-02-20", nextMaint: "2024-08-20", lastInspection: "2024-01-30", runningHours: 18700, spec: "功率 1200kW, 转速 720rpm", specEn: "Power 1200kW, Speed 720rpm", location: "辅机舱", locationEn: "Aux Engine Room", supplier: "Yanmar Marine", warranty: "2026-03-10" },
+  { id: "E003", name: "雷达系统", nameEn: "Radar System", ship: "MS Atlantic Eagle", type: "导航设备", typeEn: "Navigation Equipment", status: "维修中", statusEn: "Under Repair", manufacturer: "Furuno", manufacturerEn: "Furuno", model: "FAR-2228", serialNo: "SN-RAD-2023301", installDate: "2022-08-05", lastMaint: "2024-01-10", nextMaint: "2024-07-10", lastInspection: "2023-12-15", runningHours: 14300, spec: "X/S波段, 最大量程 120NM", specEn: "X/S-Band, Max Range 120NM", location: "驾驶台", locationEn: "Bridge", supplier: "Furuno Electric", warranty: "2027-08-05" },
+  { id: "E004", name: "锚机", nameEn: "Windlass", ship: "MS Arctic Wind", type: "甲板设备", typeEn: "Deck Equipment", status: "正常", statusEn: "Normal", manufacturer: "Rolls-Royce", manufacturerEn: "Rolls-Royce", model: "KGW-200", serialNo: "SN-WIN-2020112", installDate: "2020-09-20", lastMaint: "2024-04-01", nextMaint: "2024-10-01", lastInspection: "2024-03-10", runningHours: 21000, spec: "链径 81mm, 起锚速度 9m/min", specEn: "Chain 81mm, Speed 9m/min", location: "首部", locationEn: "Bow", supplier: "Kongsberg Maritime", warranty: "2024-09-20" },
+  { id: "E005", name: "锅炉系统", nameEn: "Boiler System", ship: "MS Ocean Star", type: "蒸汽设备", typeEn: "Steam Equipment", status: "正常", statusEn: "Normal", manufacturer: "Aalborg", manufacturerEn: "Aalborg", model: "CHB-5000", serialNo: "SN-BLR-2021502", installDate: "2021-02-10", lastMaint: "2024-05-01", nextMaint: "2024-11-01", lastInspection: "2024-04-05", runningHours: 28600, spec: "蒸发量 5000kg/h, 压力 0.7MPa", specEn: "Capacity 5000kg/h, Pressure 0.7MPa", location: "机舱", locationEn: "Engine Room", supplier: "Alfa Laval", warranty: "2026-02-10" },
+  { id: "E006", name: "压载水处理系统", nameEn: "Ballast Water System", ship: "MS Pacific Wave", type: "环保设备", typeEn: "Environmental", status: "正常", statusEn: "Normal", manufacturer: "Alfa Laval", manufacturerEn: "Alfa Laval", model: "PureBallast 3.1", serialNo: "SN-BWT-2022567", installDate: "2022-06-01", lastMaint: "2024-03-12", nextMaint: "2024-09-12", lastInspection: "2024-02-28", runningHours: 16200, spec: "处理量 1000m³/h", specEn: "Capacity 1000m³/h", location: "机舱下层", locationEn: "Lower Engine Room", supplier: "Alfa Laval", warranty: "2027-06-01" },
 ];
 
 const mockShipCerts = [
@@ -1148,19 +1151,289 @@ function ShipInfoView({ lang }: { lang: string }) {
   );
 }
 
+function EquipmentDetailModal({ equip, lang, onClose }: { equip: (typeof mockShipEquipment)[0]; lang: string; onClose: () => void }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      onClick={onClose}>
+      <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95 }}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">
+              {lang === "zh" ? "设备详情" : "Equipment Details"}
+            </h2>
+            <p className="text-sm text-slate-500">{equip.id}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+            <X className="w-5 h-5 text-slate-500" />
+          </button>
+        </div>
+        <div className="p-6 space-y-6">
+          {/* 基本信息 */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Ship className="w-5 h-5 text-blue-600" />
+              </div>
+              <h3 className="font-semibold text-slate-700">{lang === "zh" ? "基本信息" : "Basic Info"}</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow label={lang === "zh" ? "设备名称" : "Name"} value={lang === "zh" ? equip.name : equip.nameEn} />
+              <InfoRow label={lang === "zh" ? "所属船舶" : "Ship"} value={equip.ship} />
+              <InfoRow label={lang === "zh" ? "设备类型" : "Type"} value={lang === "zh" ? equip.type : equip.typeEn} />
+              <InfoRow label={lang === "zh" ? "安装位置" : "Location"} value={lang === "zh" ? equip.location : equip.locationEn} />
+              <InfoRow label={lang === "zh" ? "设备状态" : "Status"} value={`${equip.status} / ${equip.statusEn}`} />
+              <InfoRow label={lang === "zh" ? "制造厂商" : "Manufacturer"} value={equip.manufacturer} />
+              <InfoRow label={lang === "zh" ? "型号" : "Model"} value={equip.model} />
+              <InfoRow label={lang === "zh" ? "序列号" : "Serial No."} value={equip.serialNo} />
+              <InfoRow label={lang === "zh" ? "供应商" : "Supplier"} value={equip.supplier} />
+              <InfoRow label={lang === "zh" ? "安装日期" : "Install Date"} value={equip.installDate} />
+            </div>
+          </div>
+          {/* 技术规格 */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Settings className="w-5 h-5 text-purple-600" />
+              </div>
+              <h3 className="font-semibold text-slate-700">{lang === "zh" ? "技术规格" : "Technical Specs"}</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow label={lang === "zh" ? "规格参数" : "Specifications"} value={lang === "zh" ? equip.spec : equip.specEn} />
+              <InfoRow label={lang === "zh" ? "累计运行时长" : "Running Hours"} value={`${equip.runningHours.toLocaleString()} ${lang === "zh" ? "小时" : "hrs"}`} />
+            </div>
+          </div>
+          {/* 维保信息 */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Wrench className="w-5 h-5 text-orange-600" />
+              </div>
+              <h3 className="font-semibold text-slate-700">{lang === "zh" ? "维保信息" : "Maintenance Info"}</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow label={lang === "zh" ? "上次保养" : "Last Maintenance"} value={equip.lastMaint} />
+              <InfoRow label={lang === "zh" ? "下次保养" : "Next Maintenance"} value={equip.nextMaint} />
+              <InfoRow label={lang === "zh" ? "上次检验" : "Last Inspection"} value={equip.lastInspection} />
+              <InfoRow label={lang === "zh" ? "质保到期" : "Warranty Expiry"} value={equip.warranty} />
+            </div>
+            {/* 维保倒计时 */}
+            <div className="mt-4 p-4 bg-slate-50 rounded-xl">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">{lang === "zh" ? "距下次保养" : "Days until next maintenance"}</span>
+                <span className={`text-lg font-bold ${new Date(equip.nextMaint) < new Date() ? "text-red-500" : "text-blue-600"}`}>
+                  {Math.ceil((new Date(equip.nextMaint).getTime() - Date.now()) / 86400000)} {lang === "zh" ? "天" : "days"}
+                </span>
+              </div>
+              <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
+                <div className="bg-blue-500 h-2 rounded-full" style={{ width: "70%" }} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-slate-100 flex gap-3">
+          <button onClick={onClose} className="flex-1 px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 text-sm transition-colors">
+            {lang === "zh" ? "关闭" : "Close"}
+          </button>
+          <button className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm transition-colors">
+            {lang === "zh" ? "维保记录" : "Maintenance Log"}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function ShipEquipmentView({ lang }: { lang: string }) {
+  const [selectedEquip, setSelectedEquip] = useState<(typeof mockShipEquipment)[0] | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [equipForm, setEquipForm] = useState({
+    id: "", name: "", nameEn: "", ship: "MS Ocean Star", type: "动力设备", typeEn: "Power Equipment",
+    status: "正常", statusEn: "Normal", manufacturer: "", manufacturerEn: "", model: "", serialNo: "",
+    installDate: "", lastMaint: "", nextMaint: "", lastInspection: "", runningHours: 0,
+    spec: "", specEn: "", location: "", locationEn: "", supplier: "", warranty: "",
+  });
+  const resetEquipForm = () => setEquipForm({
+    id: "", name: "", nameEn: "", ship: "MS Ocean Star", type: "动力设备", typeEn: "Power Equipment",
+    status: "正常", statusEn: "Normal", manufacturer: "", manufacturerEn: "", model: "", serialNo: "",
+    installDate: "", lastMaint: "", nextMaint: "", lastInspection: "", runningHours: 0,
+    spec: "", specEn: "", location: "", locationEn: "", supplier: "", warranty: "",
+  });
+  const handleEquipSubmit = () => {
+    if (!equipForm.id || !equipForm.name) return;
+    mockShipEquipment.push({ ...equipForm });
+    resetEquipForm();
+    setShowAddModal(false);
+  };
+  const idCounter = useRef(mockShipEquipment.length + 1);
+  const nextId = () => `E${String(idCounter.current++).padStart(3, "0")}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Detail Modal */}
+      {selectedEquip && (
+        <EquipmentDetailModal
+          equip={selectedEquip}
+          lang={lang}
+          onClose={() => setSelectedEquip(null)}
+        />
+      )}
+      {/* Add Modal */}
+      {showAddModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+          onClick={() => setShowAddModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold">{lang === "zh" ? "新增设备" : "Add Equipment"}</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-slate-100 rounded">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="max-h-[65vh] overflow-y-auto space-y-4">
+              {/* 基本信息 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "基本信息" : "Basic Info"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "设备编号 *" : "Equipment ID *"}</label>
+                    <div className="flex gap-1">
+                      <input value={equipForm.id} onChange={(e) => setEquipForm({ ...equipForm, id: e.target.value })} className="flex-1 border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="E001" />
+                      <button onClick={() => setEquipForm({ ...equipForm, id: nextId() })} className="px-2 py-2 bg-slate-100 hover:bg-slate-200 rounded text-xs text-slate-600 transition-colors" title="Auto-generate">
+                        <RefreshCw className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "设备名称 *" : "Equipment Name *"}</label>
+                    <input value={equipForm.name} onChange={(e) => setEquipForm({ ...equipForm, name: e.target.value, nameEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：主发动机" : "e.g. Main Engine"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "设备类型" : "Equipment Type"}</label>
+                    <select value={equipForm.type} onChange={(e) => setEquipForm({ ...equipForm, type: e.target.value, typeEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                      <option value="动力设备">{lang === "zh" ? "动力设备" : "Power Equipment"}</option>
+                      <option value="电力设备">{lang === "zh" ? "电力设备" : "Electrical Equipment"}</option>
+                      <option value="导航设备">{lang === "zh" ? "导航设备" : "Navigation Equipment"}</option>
+                      <option value="甲板设备">{lang === "zh" ? "甲板设备" : "Deck Equipment"}</option>
+                      <option value="蒸汽设备">{lang === "zh" ? "蒸汽设备" : "Steam Equipment"}</option>
+                      <option value="环保设备">{lang === "zh" ? "环保设备" : "Environmental"}</option>
+                      <option value="通导设备">{lang === "zh" ? "通导设备" : "Comm & Nav"}</option>
+                      <option value="安全设备">{lang === "zh" ? "安全设备" : "Safety Equipment"}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "所属船舶" : "Ship"}</label>
+                    <select value={equipForm.ship} onChange={(e) => setEquipForm({ ...equipForm, ship: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                      <option value="MS Ocean Star">MS Ocean Star</option>
+                      <option value="MS Pacific Wave">MS Pacific Wave</option>
+                      <option value="MS Atlantic Eagle">MS Atlantic Eagle</option>
+                      <option value="MS Arctic Wind">MS Arctic Wind</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "设备状态" : "Status"}</label>
+                    <select value={equipForm.status} onChange={(e) => setEquipForm({ ...equipForm, status: e.target.value, statusEn: e.target.value === "正常" ? "Normal" : e.target.value === "维修中" ? "Under Repair" : e.target.value === "待检修" ? "Inspection Due" : "Offline" })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                      <option value="正常">{lang === "zh" ? "正常" : "Normal"}</option>
+                      <option value="维修中">{lang === "zh" ? "维修中" : "Under Repair"}</option>
+                      <option value="待检修">{lang === "zh" ? "待检修" : "Inspection Due"}</option>
+                      <option value="离线">{lang === "zh" ? "离线" : "Offline"}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "安装位置" : "Location"}</label>
+                    <input value={equipForm.location} onChange={(e) => setEquipForm({ ...equipForm, location: e.target.value, locationEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：机舱" : "e.g. Engine Room"} />
+                  </div>
+                </div>
+              </div>
+              {/* 制造信息 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "制造信息" : "Manufacturer Info"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "制造商" : "Manufacturer"}</label>
+                    <input value={equipForm.manufacturer} onChange={(e) => setEquipForm({ ...equipForm, manufacturer: e.target.value, manufacturerEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：MAN B&W" : "e.g. MAN B&W"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "型号" : "Model"}</label>
+                    <input value={equipForm.model} onChange={(e) => setEquipForm({ ...equipForm, model: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：6S50MC-C7" : "e.g. 6S50MC-C7"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "序列号" : "Serial No."}</label>
+                    <input value={equipForm.serialNo} onChange={(e) => setEquipForm({ ...equipForm, serialNo: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="SN-XXXXXX" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "供应商" : "Supplier"}</label>
+                    <input value={equipForm.supplier} onChange={(e) => setEquipForm({ ...equipForm, supplier: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "安装日期" : "Install Date"}</label>
+                    <input type="date" value={equipForm.installDate} onChange={(e) => setEquipForm({ ...equipForm, installDate: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "质保到期" : "Warranty Expiry"}</label>
+                    <input type="date" value={equipForm.warranty} onChange={(e) => setEquipForm({ ...equipForm, warranty: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                </div>
+              </div>
+              {/* 技术参数与维保 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "技术参数与维保" : "Specs & Maintenance"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "规格参数" : "Specifications"}</label>
+                    <input value={equipForm.spec} onChange={(e) => setEquipForm({ ...equipForm, spec: e.target.value, specEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：功率 9480kW, 转速 127rpm" : "e.g. Power 9480kW, Speed 127rpm"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "运行时长 (h)" : "Running Hours"}</label>
+                    <input type="number" value={equipForm.runningHours || ""} onChange={(e) => setEquipForm({ ...equipForm, runningHours: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "上次保养" : "Last Maint."}</label>
+                    <input type="date" value={equipForm.lastMaint} onChange={(e) => setEquipForm({ ...equipForm, lastMaint: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "下次保养" : "Next Maint."}</label>
+                    <input type="date" value={equipForm.nextMaint} onChange={(e) => setEquipForm({ ...equipForm, nextMaint: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "上次检验" : "Last Inspection"}</label>
+                    <input type="date" value={equipForm.lastInspection} onChange={(e) => setEquipForm({ ...equipForm, lastInspection: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => { resetEquipForm(); setShowAddModal(false); }} className="flex-1 px-4 py-2 border border-slate-300 text-slate-600 rounded hover:bg-slate-50 text-sm transition-colors">
+                {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+              <button onClick={handleEquipSubmit} disabled={!equipForm.id || !equipForm.name} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                {lang === "zh" ? "确认添加" : "Confirm Add"}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
       <div className="bg-white rounded-lg shadow-sm">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <h3 className="font-semibold text-slate-800">
             {lang === "zh" ? "船舶设备" : "Ship Equipment"}
           </h3>
-          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+          <button onClick={() => setShowAddModal(true)} className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors">
             {lang === "zh" ? "新增设备" : "Add Equipment"}
           </button>
         </div>
@@ -1178,7 +1451,10 @@ function ShipEquipmentView({ lang }: { lang: string }) {
                   {lang === "zh" ? "所属船舶" : "Ship"}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
-                  {lang === "zh" ? "类型" : "Type"}
+                  {lang === "zh" ? "型号" : "Model"}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "运行时长" : "Running Hours"}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
                   {lang === "zh" ? "状态" : "Status"}
@@ -1186,25 +1462,34 @@ function ShipEquipmentView({ lang }: { lang: string }) {
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
                   {lang === "zh" ? "下次保养" : "Next Maint."}
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">
+                  {lang === "zh" ? "操作" : "Actions"}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {mockShipEquipment.map((item) => (
                 <tr key={item.id} className="hover:bg-slate-50">
                   <td className="px-6 py-4 text-sm text-slate-800">{item.id}</td>
-                  <td className="px-6 py-4 text-sm text-slate-800 font-medium">
-                    {lang === "zh" ? item.name : item.nameEn}
+                  <td className="px-6 py-4">
+                    <p className="text-sm text-slate-800 font-medium">
+                      {lang === "zh" ? item.name : item.nameEn}
+                    </p>
+                    <p className="text-xs text-slate-400">{item.model}</p>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">{item.ship}</td>
+                  <td className="px-6 py-4 text-sm text-slate-500">{item.model}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">
-                    {lang === "zh" ? item.type : item.typeEn}
+                    {item.runningHours.toLocaleString()} h
                   </td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-2 py-0.5 text-xs rounded ${
                         item.status === "正常"
                           ? "bg-green-100 text-green-600"
-                          : "bg-orange-100 text-orange-600"
+                          : item.status === "维修中"
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-red-100 text-red-600"
                       }`}
                     >
                       {lang === "zh" ? item.status : item.statusEn}
@@ -1212,6 +1497,14 @@ function ShipEquipmentView({ lang }: { lang: string }) {
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
                     {item.nextMaint}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => setSelectedEquip(item)}
+                      className="text-blue-500 hover:text-blue-600 text-sm"
+                    >
+                      {lang === "zh" ? "详情" : "Detail"}
+                    </button>
                   </td>
                 </tr>
               ))}
