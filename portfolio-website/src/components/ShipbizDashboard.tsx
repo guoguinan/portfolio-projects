@@ -834,6 +834,34 @@ function ShipDetailModal({
 function ShipInfoView({ lang }: { lang: string }) {
   const [selectedShip, setSelectedShip] = useState<(typeof mockShipList)[0] | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [addForm, setAddForm] = useState({
+    name: "", nameEn: "", type: "散货船", typeEn: "Bulk Carrier", status: "在航", statusEn: "Sailing",
+    lastPort: "", nextPort: "", imo: "", mmsi: "", callSign: "", flag: "中国", flagEn: "China",
+    grossTonnage: 0, netTonnage: 0, deadweight: 0, length: 0, width: 0, draft: 0,
+    buildYear: new Date().getFullYear(), classSociety: "CCS", classSocietyEn: "CCS",
+    owner: "", manager: "", crewCount: 20, engineType: "", enginePower: 0,
+    vsatStatus: "在线", vsatStatusEn: "Online", lat: 0, lon: 0, speed: 0, course: 0, heading: 0,
+    eta: "", positionTime: new Date().toISOString().slice(0, 16).replace("T", " "),
+    fuelRemaining: 0, freshWater: 0, lastSurvey: "",
+    communicationStatus: "正常", communicationStatusEn: "Normal",
+  });
+  const resetAddForm = () => setAddForm({
+    name: "", nameEn: "", type: "散货船", typeEn: "Bulk Carrier", status: "在航", statusEn: "Sailing",
+    lastPort: "", nextPort: "", imo: "", mmsi: "", callSign: "", flag: "中国", flagEn: "China",
+    grossTonnage: 0, netTonnage: 0, deadweight: 0, length: 0, width: 0, draft: 0,
+    buildYear: new Date().getFullYear(), classSociety: "CCS", classSocietyEn: "CCS",
+    owner: "", manager: "", crewCount: 20, engineType: "", enginePower: 0,
+    vsatStatus: "在线", vsatStatusEn: "Online", lat: 0, lon: 0, speed: 0, course: 0, heading: 0,
+    eta: "", positionTime: new Date().toISOString().slice(0, 16).replace("T", " "),
+    fuelRemaining: 0, freshWater: 0, lastSurvey: "",
+    communicationStatus: "正常", communicationStatusEn: "Normal",
+  });
+  const handleAddSubmit = () => {
+    if (!addForm.name) return;
+    mockShipList.push({ ...addForm, positionTime: addForm.positionTime + ":00" });
+    resetAddForm();
+    setShowAddModal(false);
+  };
 
   return (
     <motion.div
@@ -869,7 +897,172 @@ function ShipInfoView({ lang }: { lang: string }) {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-slate-500 text-sm">{lang === "zh" ? "表单开发中..." : "Form coming soon..."}</p>
+            <div className="max-h-[70vh] overflow-y-auto space-y-4">
+              {/* 基础信息 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "基础信息" : "Basic Info"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船名 *" : "Ship Name *"}</label>
+                    <input value={addForm.name} onChange={(e) => setAddForm({ ...addForm, name: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：太平洋号" : "e.g. Pacific Star"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "英文名" : "English Name"}</label>
+                    <input value={addForm.nameEn} onChange={(e) => setAddForm({ ...addForm, nameEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船舶类型" : "Ship Type"}</label>
+                    <select value={addForm.type} onChange={(e) => setAddForm({ ...addForm, type: e.target.value, typeEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                      <option value="散货船">散货船 / Bulk Carrier</option>
+                      <option value="集装箱船">集装箱船 / Container Ship</option>
+                      <option value="油轮">油轮 / Tanker</option>
+                      <option value="化学品船">化学品船 / Chemical Tanker</option>
+                      <option value="客船">客船 / Passenger Ship</option>
+                      <option value="渔船">渔船 / Fishing Vessel</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船舶状态" : "Status"}</label>
+                    <select value={addForm.status} onChange={(e) => setAddForm({ ...addForm, status: e.target.value, statusEn: e.target.value === "在航" ? "Sailing" : e.target.value === "维修" ? "Under Repair" : "Anchored" })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                      <option value="在航">{lang === "zh" ? "在航" : "Sailing"}</option>
+                      <option value="维修">{lang === "zh" ? "维修" : "Under Repair"}</option>
+                      <option value="锚泊">{lang === "zh" ? "锚泊" : "Anchored"}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              {/* 船舶参数 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "船舶参数" : "Ship Parameters"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">IMO</label>
+                    <input value={addForm.imo} onChange={(e) => setAddForm({ ...addForm, imo: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="IMO 9xxxxxx" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">MMSI</label>
+                    <input value={addForm.mmsi} onChange={(e) => setAddForm({ ...addForm, mmsi: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="4xxxxxxx" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "呼号" : "Call Sign"}</label>
+                    <input value={addForm.callSign} onChange={(e) => setAddForm({ ...addForm, callSign: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船籍国" : "Flag"}</label>
+                    <input value={addForm.flag} onChange={(e) => setAddForm({ ...addForm, flag: e.target.value, flagEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：中国" : "e.g. China"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "总吨 (GT)" : "Gross Tonnage (GT)"}</label>
+                    <input type="number" value={addForm.grossTonnage || ""} onChange={(e) => setAddForm({ ...addForm, grossTonnage: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "净吨 (NT)" : "Net Tonnage (NT)"}</label>
+                    <input type="number" value={addForm.netTonnage || ""} onChange={(e) => setAddForm({ ...addForm, netTonnage: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "载重吨 (DWT)" : "Deadweight (DWT)"}</label>
+                    <input type="number" value={addForm.deadweight || ""} onChange={(e) => setAddForm({ ...addForm, deadweight: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "建造年份" : "Build Year"}</label>
+                    <input type="number" value={addForm.buildYear} onChange={(e) => setAddForm({ ...addForm, buildYear: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 mt-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船长 (m)" : "Length (m)"}</label>
+                    <input type="number" value={addForm.length || ""} onChange={(e) => setAddForm({ ...addForm, length: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船宽 (m)" : "Width (m)"}</label>
+                    <input type="number" value={addForm.width || ""} onChange={(e) => setAddForm({ ...addForm, width: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "吃水 (m)" : "Draft (m)"}</label>
+                    <input type="number" value={addForm.draft || ""} onChange={(e) => setAddForm({ ...addForm, draft: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                </div>
+              </div>
+              {/* 动态与通讯 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "航行动态" : "Navigation Status"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "上一港" : "Last Port"}</label>
+                    <input value={addForm.lastPort} onChange={(e) => setAddForm({ ...addForm, lastPort: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：上海" : "e.g. Shanghai"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "下一港" : "Next Port"}</label>
+                    <input value={addForm.nextPort} onChange={(e) => setAddForm({ ...addForm, nextPort: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：宁波" : "e.g. Ningbo"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "纬度" : "Latitude"}</label>
+                    <input type="number" step="0.0001" value={addForm.lat || ""} onChange={(e) => setAddForm({ ...addForm, lat: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="31.2304" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "经度" : "Longitude"}</label>
+                    <input type="number" step="0.0001" value={addForm.lon || ""} onChange={(e) => setAddForm({ ...addForm, lon: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="121.4737" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "航速 (kn)" : "Speed (kn)"}</label>
+                    <input type="number" value={addForm.speed || ""} onChange={(e) => setAddForm({ ...addForm, speed: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "航向 (°)" : "Course (°)"}</label>
+                    <input type="number" value={addForm.course || ""} onChange={(e) => setAddForm({ ...addForm, course: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船首向 (°)" : "Heading (°)"}</label>
+                    <input type="number" value={addForm.heading || ""} onChange={(e) => setAddForm({ ...addForm, heading: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "ETA" : "ETA"}</label>
+                    <input value={addForm.eta} onChange={(e) => setAddForm({ ...addForm, eta: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="YYYY-MM-DD HH:MM" />
+                  </div>
+                </div>
+              </div>
+              {/* 管理信息 */}
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2">{lang === "zh" ? "管理信息" : "Management Info"}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船级社" : "Class Society"}</label>
+                    <select value={addForm.classSociety} onChange={(e) => setAddForm({ ...addForm, classSociety: e.target.value, classSocietyEn: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                      <option value="CCS">CCS</option><option value="LR">LR</option><option value="DNV">DNV</option>
+                      <option value="BV">BV</option><option value="ABS">ABS</option><option value="NK">NK</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船员人数" : "Crew Count"}</label>
+                    <input type="number" value={addForm.crewCount} onChange={(e) => setAddForm({ ...addForm, crewCount: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "船东" : "Owner"}</label>
+                    <input value={addForm.owner} onChange={(e) => setAddForm({ ...addForm, owner: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "管理公司" : "Manager"}</label>
+                    <input value={addForm.manager} onChange={(e) => setAddForm({ ...addForm, manager: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "主机型号" : "Engine Type"}</label>
+                    <input value={addForm.engineType} onChange={(e) => setAddForm({ ...addForm, engineType: e.target.value })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder={lang === "zh" ? "例：MAN B&W 6S50MC" : "e.g. MAN B&W 6S50MC"} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">{lang === "zh" ? "主机功率 (kW)" : "Engine Power (kW)"}</label>
+                    <input type="number" value={addForm.enginePower || ""} onChange={(e) => setAddForm({ ...addForm, enginePower: Number(e.target.value) })} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => { resetAddForm(); setShowAddModal(false); }} className="flex-1 px-4 py-2 border border-slate-300 text-slate-600 rounded hover:bg-slate-50 text-sm transition-colors">
+                {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+              <button onClick={handleAddSubmit} disabled={!addForm.name} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                {lang === "zh" ? "确认添加" : "Confirm Add"}
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}
