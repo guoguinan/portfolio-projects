@@ -684,19 +684,204 @@ function DashboardView({ lang }: { lang: string }) {
   );
 }
 
+/* ========== Ship Info Helper Components ========== */
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-slate-500">{label}</span>
+      <span className="text-slate-800 font-medium">{value}</span>
+    </div>
+  );
+}
+
+function ShipDetailModal({
+  ship,
+  lang,
+  onClose,
+}: {
+  ship: (typeof mockShipList)[0];
+  lang: string;
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-8 pb-8 overflow-y-auto"
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 my-auto"
+      >
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <Ship className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">{ship.name}</h2>
+              <p className="text-sm text-slate-500">
+                {ship.imo} · {lang === "zh" ? ship.type : ship.typeEn} · {lang === "zh" ? ship.flag : ship.flagEn}
+              </p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+            <X className="w-5 h-5 text-slate-500" />
+          </button>
+        </div>
+        {/* Body */}
+        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+          {/* Status Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-slate-50 rounded-lg p-4">
+              <p className="text-xs text-slate-500 mb-1">{lang === "zh" ? "船舶状态" : "Status"}</p>
+              <span className={`inline-block px-2 py-0.5 text-xs rounded font-medium ${
+                ship.status === "在航" ? "bg-green-100 text-green-600" : ship.status === "维修" ? "bg-orange-100 text-orange-600" : "bg-blue-100 text-blue-600"
+              }`}>{lang === "zh" ? ship.status : ship.statusEn}</span>
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <p className="text-xs text-slate-500 mb-1">{lang === "zh" ? "船位更新" : "Position Update"}</p>
+              <p className="text-sm font-semibold text-slate-800">{ship.positionTime}</p>
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <p className="text-xs text-slate-500 mb-1">VSAT</p>
+              <span className={`inline-block px-2 py-0.5 text-xs rounded font-medium ${
+                ship.vsatStatus === "在线" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+              }`}>{lang === "zh" ? ship.vsatStatus : ship.vsatStatusEn}</span>
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <p className="text-xs text-slate-500 mb-1">{lang === "zh" ? "通讯" : "Comm."}</p>
+              <span className={`inline-block px-2 py-0.5 text-xs rounded font-medium ${
+                ship.communicationStatus === "正常" ? "bg-green-100 text-green-600" : "bg-orange-100 text-orange-600"
+              }`}>{lang === "zh" ? ship.communicationStatus : ship.communicationStatusEn}</span>
+            </div>
+          </div>
+          {/* Info Grid */}
+          <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <Ship className="w-4 h-4 text-blue-500" />{lang === "zh" ? "基本信息" : "Basic Info"}
+              </h3>
+              <div className="space-y-2">
+                <InfoRow label={lang === "zh" ? "IMO编号" : "IMO"} value={ship.imo} />
+                <InfoRow label="MMSI" value={ship.mmsi} />
+                <InfoRow label={lang === "zh" ? "呼号" : "Call Sign"} value={ship.callSign} />
+                <InfoRow label={lang === "zh" ? "船籍" : "Flag"} value={lang === "zh" ? ship.flag : ship.flagEn} />
+                <InfoRow label={lang === "zh" ? "船级社" : "Class"} value={lang === "zh" ? ship.classSociety : ship.classSocietyEn} />
+                <InfoRow label={lang === "zh" ? "建造年份" : "Built"} value={String(ship.buildYear)} />
+                <InfoRow label={lang === "zh" ? "船东" : "Owner"} value={ship.owner} />
+                <InfoRow label={lang === "zh" ? "管理公司" : "Manager"} value={ship.manager} />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-blue-500" />{lang === "zh" ? "尺度参数" : "Dimensions"}
+              </h3>
+              <div className="space-y-2">
+                <InfoRow label={lang === "zh" ? "总吨" : "GT"} value={ship.grossTonnage.toLocaleString() + " t"} />
+                <InfoRow label={lang === "zh" ? "净吨" : "NT"} value={ship.netTonnage.toLocaleString() + " t"} />
+                <InfoRow label={lang === "zh" ? "载重吨" : "DWT"} value={ship.deadweight.toLocaleString() + " t"} />
+                <InfoRow label={lang === "zh" ? "船长" : "LOA"} value={ship.length + " m"} />
+                <InfoRow label={lang === "zh" ? "船宽" : "Beam"} value={ship.width + " m"} />
+                <InfoRow label={lang === "zh" ? "吃水" : "Draft"} value={ship.draft + " m"} />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-blue-500" />{lang === "zh" ? "轮机信息" : "Engine"}
+              </h3>
+              <div className="space-y-2">
+                <InfoRow label={lang === "zh" ? "主机型号" : "Engine Type"} value={ship.engineType} />
+                <InfoRow label={lang === "zh" ? "主机功率" : "Power"} value={ship.enginePower.toLocaleString() + " kW"} />
+                <InfoRow label={lang === "zh" ? "船员人数" : "Crew"} value={String(ship.crewCount)} />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <Users className="w-4 h-4 text-blue-500" />{lang === "zh" ? "动态监测" : "Dynamics"}
+              </h3>
+              <div className="space-y-2">
+                <InfoRow label={lang === "zh" ? "纬度" : "Lat"} value={ship.lat.toFixed(4) + "°"} />
+                <InfoRow label={lang === "zh" ? "经度" : "Lon"} value={ship.lon.toFixed(4) + "°"} />
+                <InfoRow label={lang === "zh" ? "航速" : "Speed"} value={ship.speed.toFixed(1) + " kn"} />
+                <InfoRow label={lang === "zh" ? "航向" : "Course"} value={ship.course + "°"} />
+                <InfoRow label={lang === "zh" ? "船首向" : "Heading"} value={ship.heading + "°"} />
+                <InfoRow label="ETA" value={ship.eta} />
+              </div>
+            </div>
+          </div>
+          {/* Supply */}
+          <div className="bg-slate-50 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-slate-800 mb-3">{lang === "zh" ? "供应保障" : "Supply Status"}</h3>
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div><span className="text-slate-500">{lang === "zh" ? "剩余燃油" : "Fuel"}:</span> <span className="font-medium">{ship.fuelRemaining} t</span></div>
+              <div><span className="text-slate-500">{lang === "zh" ? "淡水存量" : "Water"}:</span> <span className="font-medium">{ship.freshWater} t</span></div>
+              <div><span className="text-slate-500">{lang === "zh" ? "上次检验" : "Last Survey"}:</span> <span className="font-medium">{ship.lastSurvey}</span></div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function ShipInfoView({ lang }: { lang: string }) {
+  const [selectedShip, setSelectedShip] = useState<(typeof mockShipList)[0] | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Detail Modal */}
+      {selectedShip && (
+        <ShipDetailModal
+          ship={selectedShip}
+          lang={lang}
+          onClose={() => setSelectedShip(null)}
+        />
+      )}
+      {/* Add Modal */}
+      {showAddModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+          onClick={() => setShowAddModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold">{lang === "zh" ? "新增船舶" : "Add Ship"}</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-slate-100 rounded">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-slate-500 text-sm">{lang === "zh" ? "表单开发中..." : "Form coming soon..."}</p>
+          </motion.div>
+        </motion.div>
+      )}
       <div className="bg-white rounded-lg shadow-sm">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <h3 className="font-semibold text-slate-800">
             {lang === "zh" ? "船舶信息列表" : "Ship Information"}
           </h3>
-          <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+          >
             {lang === "zh" ? "新增船舶" : "Add Ship"}
           </button>
         </div>
@@ -753,7 +938,10 @@ function ShipInfoView({ lang }: { lang: string }) {
                     {ship.nextPort}
                   </td>
                   <td className="px-6 py-4">
-                    <button className="text-blue-500 hover:text-blue-600 text-sm">
+                    <button
+                      onClick={() => setSelectedShip(ship)}
+                      className="text-blue-500 hover:text-blue-600 text-sm"
+                    >
                       {lang === "zh" ? "详情" : "Detail"}
                     </button>
                   </td>
